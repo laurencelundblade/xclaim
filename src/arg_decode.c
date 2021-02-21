@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "decode_token.h"
 #include "t_cose/q_useful_buf.h"
 
 #include "useful_buf_malloc.h"

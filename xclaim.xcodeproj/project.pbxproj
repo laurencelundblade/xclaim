@@ -16,6 +16,10 @@
 		E7FDBF7D25E2EC54007138A8 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = E7FDBF7325E2EC54007138A8 /* base64.c */; };
 		E7FDBF7E25E2EC54007138A8 /* arg_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = E7FDBF7425E2EC54007138A8 /* arg_decode.c */; };
 		E7FDBF7F25E2EC54007138A8 /* jtoken_adapt.c in Sources */ = {isa = PBXBuildFile; fileRef = E7FDBF7625E2EC54007138A8 /* jtoken_adapt.c */; };
+		E7FDBF8D25E2F45B007138A8 /* libqcbor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7FDBF8C25E2F3BD007138A8 /* libqcbor.a */; };
+		E7FDBF8F25E2F47E007138A8 /* libctoken.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7FDBF8E25E2F47E007138A8 /* libctoken.a */; };
+		E7FDBF9125E2F4F9007138A8 /* libt_cose.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7FDBF9025E2F4F9007138A8 /* libt_cose.a */; };
+		E7FDBF9325E2F51A007138A8 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7FDBF9225E2F51A007138A8 /* libcrypto.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,6 +53,20 @@
 		E7FDBF7425E2EC54007138A8 /* arg_decode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = arg_decode.c; path = src/arg_decode.c; sourceTree = "<group>"; };
 		E7FDBF7525E2EC54007138A8 /* jtoken_adapt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = jtoken_adapt.h; path = src/jtoken_adapt.h; sourceTree = "<group>"; };
 		E7FDBF7625E2EC54007138A8 /* jtoken_adapt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jtoken_adapt.c; path = src/jtoken_adapt.c; sourceTree = "<group>"; };
+		E7FDBF8025E2EFFE007138A8 /* qcbor */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qcbor; path = ../../../../../usr/local/include/qcbor; sourceTree = "<group>"; };
+		E7FDBF8125E2F088007138A8 /* t_cose */ = {isa = PBXFileReference; lastKnownFileType = folder; name = t_cose; path = ../../../../../usr/local/include/t_cose; sourceTree = "<group>"; };
+		E7FDBF8325E2F159007138A8 /* ctoken_eat_labels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_eat_labels.h; path = ../../ctoken/command_line/inc/ctoken_eat_labels.h; sourceTree = "<group>"; };
+		E7FDBF8425E2F159007138A8 /* ctoken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken.h; path = ../../ctoken/command_line/inc/ctoken.h; sourceTree = "<group>"; };
+		E7FDBF8525E2F159007138A8 /* ctoken_cwt_labels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_cwt_labels.h; path = ../../ctoken/command_line/inc/ctoken_cwt_labels.h; sourceTree = "<group>"; };
+		E7FDBF8625E2F159007138A8 /* ctoken_psaia_decode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_psaia_decode.h; path = ../../ctoken/command_line/inc/ctoken_psaia_decode.h; sourceTree = "<group>"; };
+		E7FDBF8725E2F159007138A8 /* ctoken_encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_encode.h; path = ../../ctoken/command_line/inc/ctoken_encode.h; sourceTree = "<group>"; };
+		E7FDBF8825E2F159007138A8 /* ctoken_psaia_labels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_psaia_labels.h; path = ../../ctoken/command_line/inc/ctoken_psaia_labels.h; sourceTree = "<group>"; };
+		E7FDBF8925E2F159007138A8 /* ctoken_psaia_encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_psaia_encode.h; path = ../../ctoken/command_line/inc/ctoken_psaia_encode.h; sourceTree = "<group>"; };
+		E7FDBF8A25E2F159007138A8 /* ctoken_decode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_decode.h; path = ../../ctoken/command_line/inc/ctoken_decode.h; sourceTree = "<group>"; };
+		E7FDBF8C25E2F3BD007138A8 /* libqcbor.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libqcbor.a; path = ../../../../../usr/local/lib/libqcbor.a; sourceTree = "<group>"; };
+		E7FDBF8E25E2F47E007138A8 /* libctoken.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libctoken.a; path = ../../ctoken/command_line/libctoken.a; sourceTree = "<group>"; };
+		E7FDBF9025E2F4F9007138A8 /* libt_cose.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libt_cose.a; path = ../../../../../usr/local/lib/libt_cose.a; sourceTree = "<group>"; };
+		E7FDBF9225E2F51A007138A8 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../../usr/local/lib/libcrypto.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +74,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7FDBF8D25E2F45B007138A8 /* libqcbor.a in Frameworks */,
+				E7FDBF9125E2F4F9007138A8 /* libt_cose.a in Frameworks */,
+				E7FDBF9325E2F51A007138A8 /* libcrypto.a in Frameworks */,
+				E7FDBF8F25E2F47E007138A8 /* libctoken.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,7 +88,11 @@
 			isa = PBXGroup;
 			children = (
 				E7FDBF6525E2EC35007138A8 /* src */,
+				E7FDBF8225E2F131007138A8 /* ctoken */,
+				E7FDBF8125E2F088007138A8 /* t_cose */,
+				E7FDBF8025E2EFFE007138A8 /* qcbor */,
 				E7FDBF5B25E2EA65007138A8 /* Products */,
+				E7FDBF8B25E2F3BC007138A8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -100,6 +126,32 @@
 				E7FDBF6C25E2EC54007138A8 /* xclaim.h */,
 			);
 			name = src;
+			sourceTree = "<group>";
+		};
+		E7FDBF8225E2F131007138A8 /* ctoken */ = {
+			isa = PBXGroup;
+			children = (
+				E7FDBF8525E2F159007138A8 /* ctoken_cwt_labels.h */,
+				E7FDBF8A25E2F159007138A8 /* ctoken_decode.h */,
+				E7FDBF8325E2F159007138A8 /* ctoken_eat_labels.h */,
+				E7FDBF8725E2F159007138A8 /* ctoken_encode.h */,
+				E7FDBF8625E2F159007138A8 /* ctoken_psaia_decode.h */,
+				E7FDBF8925E2F159007138A8 /* ctoken_psaia_encode.h */,
+				E7FDBF8825E2F159007138A8 /* ctoken_psaia_labels.h */,
+				E7FDBF8425E2F159007138A8 /* ctoken.h */,
+			);
+			name = ctoken;
+			sourceTree = "<group>";
+		};
+		E7FDBF8B25E2F3BC007138A8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E7FDBF9225E2F51A007138A8 /* libcrypto.a */,
+				E7FDBF9025E2F4F9007138A8 /* libt_cose.a */,
+				E7FDBF8E25E2F47E007138A8 /* libctoken.a */,
+				E7FDBF8C25E2F3BD007138A8 /* libqcbor.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -224,6 +276,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/include;
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -287,6 +340,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					/usr/local/lib,
+					../../ctoken/master,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;

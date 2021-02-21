@@ -6,7 +6,6 @@
 //  Copyright © 2021 Laurence Lundblade. All rights reserved.
 //
 
-#include "decode_token.h"
 #include "t_cose/q_useful_buf.h"
 #include <stdlib.h>
 #include <fcntl.h>

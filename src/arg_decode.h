@@ -13,7 +13,6 @@
 #ifndef arg_parse_h
 #define arg_parse_h
 
-#include "decode_token.h"
 #include "xclaim.h"
 
 #include <stdbool.h>
