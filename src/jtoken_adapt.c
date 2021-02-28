@@ -11,8 +11,8 @@
  */
 
 #include "jtoken_adapt.h"
-#include "ctoken_cwt_labels.h"
-#include "ctoken_eat_labels.h"
+#include "ctoken/ctoken_cwt_labels.h"
+#include "ctoken/ctoken_eat_labels.h"
 #include "jtoken_encode.h"
 
 
@@ -131,7 +131,7 @@ int xclaim_jtoken_encode_init(xclaim_encoder *out, struct jtoken_encode_ctx *ctx
     /* All these casts are just for the context pointer, the void * */
     out->start_submods_section = (int (*)(void *))jtoken_encode_start_submod_section;
     out->end_submods_section = (int (*)(void *))jtoken_encode_end_submod_section;
-    out->open_submod = (int (*)(void *, const char *))jtoken_encode_open_submod;
+    out->open_submod = (int (*)(void *, struct q_useful_buf_c))jtoken_encode_open_submod;
     out->close_submod = (int (*)(void *))jtoken_encode_close_submod_section;
 
     return 0;

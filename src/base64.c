@@ -8,6 +8,7 @@
 
 #include "base64.h"
 #include <stdlib.h>
+#include <stddef.h>
 
 
 

@@ -13,7 +13,7 @@
 #ifndef xclaim_h
 #define xclaim_h
 
-#include "ctoken.h"
+#include "ctoken/ctoken.h"
 #include "qcbor/qcbor_decode.h"
 
 /*
@@ -59,7 +59,7 @@ typedef struct {
     int (*next_claim)(void *ctx, struct xclaim *claim);
     int (*enter_submod)(void *ctx,uint32_t index, struct q_useful_buf_c *name);
     int (*exit_submod)(void *ctx);
-    int (*get_nested)(void *ctx, uint32_t index, enum ctoken_type_t *type, struct q_useful_buf_c *token);
+    int (*get_nested)(void *ctx, uint32_t index, enum ctoken_type_t *type, struct q_useful_buf_c *name, struct q_useful_buf_c *token);
 
     void *ctx;
 } xclaim_decoder;
@@ -72,9 +72,9 @@ typedef struct  {
     int (*output_claim)(void *ctx, const struct xclaim *claim);
     int (*start_submods_section)(void *ctx);
     int (*end_submods_section)(void *ctx);
-    int (*open_submod)(void *ctx, const char *submod_name);
+    int (*open_submod)(void *ctx, const struct q_useful_buf_c);
     int (*close_submod)(void *ctx);
-    int (*output_nested)(void *ctx, struct q_useful_buf_c token);
+    int (*output_nested)(void *ctx, const struct q_useful_buf_c, struct q_useful_buf_c token);
 
     void *ctx;
 } xclaim_encoder;

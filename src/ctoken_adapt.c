@@ -12,8 +12,8 @@
 
 #include "ctoken_adapt.h"
 
-#include "ctoken_encode.h"
-#include "ctoken_decode.h"
+#include "ctoken/ctoken_encode.h"
+#include "ctoken/ctoken_decode.h"
 
 
 
@@ -128,7 +128,7 @@ int xclaim_ctoken_encode_init(xclaim_encoder *out, struct ctoken_encode_ctx *ctx
     out->output_claim          = encode_xclaim;
 
     /* Can use ctoken methods directly. Casts are only for the first arg */
-    out->open_submod           = (int (*)(void *, const char *))ctoken_encode_open_submod;
+    out->open_submod           = (int (*)(void *, const struct q_useful_buf_c))ctoken_encode_open_submod;
     out->close_submod          = (int (*)(void *))ctoken_encode_close_submod;
     out->start_submods_section = (int (*)(void *))ctoken_encode_start_submod_section;
     out->end_submods_section   = (int (*)(void *))ctoken_encode_start_submod_section;
@@ -199,7 +199,7 @@ xclaim_ctoken_decode_setup(xclaim_decoder *ic, struct ctoken_decode_ctx *ctx)
     // TODO: glue functions to translate error codes for these.
     ic->rewind       = (void (*)(void *))ctoken_decode_rewind;
     ic->exit_submod  = (int (*)(void *))ctoken_decode_exit_submod;
-    ic->get_nested   = (int (*)(void *, uint32_t, enum ctoken_type_t *, struct q_useful_buf_c *))ctoken_decode_get_nth_nested_token;
+    ic->get_nested   = (int (*)(void *, uint32_t, enum ctoken_type_t *, struct q_useful_buf_c *, struct q_useful_buf_c *))ctoken_decode_get_nth_nested_token;
 }
 
 

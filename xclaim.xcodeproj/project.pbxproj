@@ -55,14 +55,6 @@
 		E7FDBF7625E2EC54007138A8 /* jtoken_adapt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jtoken_adapt.c; path = src/jtoken_adapt.c; sourceTree = "<group>"; };
 		E7FDBF8025E2EFFE007138A8 /* qcbor */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qcbor; path = ../../../../../usr/local/include/qcbor; sourceTree = "<group>"; };
 		E7FDBF8125E2F088007138A8 /* t_cose */ = {isa = PBXFileReference; lastKnownFileType = folder; name = t_cose; path = ../../../../../usr/local/include/t_cose; sourceTree = "<group>"; };
-		E7FDBF8325E2F159007138A8 /* ctoken_eat_labels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_eat_labels.h; path = ../../ctoken/command_line/inc/ctoken_eat_labels.h; sourceTree = "<group>"; };
-		E7FDBF8425E2F159007138A8 /* ctoken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken.h; path = ../../ctoken/command_line/inc/ctoken.h; sourceTree = "<group>"; };
-		E7FDBF8525E2F159007138A8 /* ctoken_cwt_labels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_cwt_labels.h; path = ../../ctoken/command_line/inc/ctoken_cwt_labels.h; sourceTree = "<group>"; };
-		E7FDBF8625E2F159007138A8 /* ctoken_psaia_decode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_psaia_decode.h; path = ../../ctoken/command_line/inc/ctoken_psaia_decode.h; sourceTree = "<group>"; };
-		E7FDBF8725E2F159007138A8 /* ctoken_encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_encode.h; path = ../../ctoken/command_line/inc/ctoken_encode.h; sourceTree = "<group>"; };
-		E7FDBF8825E2F159007138A8 /* ctoken_psaia_labels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_psaia_labels.h; path = ../../ctoken/command_line/inc/ctoken_psaia_labels.h; sourceTree = "<group>"; };
-		E7FDBF8925E2F159007138A8 /* ctoken_psaia_encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_psaia_encode.h; path = ../../ctoken/command_line/inc/ctoken_psaia_encode.h; sourceTree = "<group>"; };
-		E7FDBF8A25E2F159007138A8 /* ctoken_decode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ctoken_decode.h; path = ../../ctoken/command_line/inc/ctoken_decode.h; sourceTree = "<group>"; };
 		E7FDBF8C25E2F3BD007138A8 /* libqcbor.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libqcbor.a; path = ../../../../../usr/local/lib/libqcbor.a; sourceTree = "<group>"; };
 		E7FDBF8E25E2F47E007138A8 /* libctoken.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libctoken.a; path = ../../ctoken/command_line/libctoken.a; sourceTree = "<group>"; };
 		E7FDBF9025E2F4F9007138A8 /* libt_cose.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libt_cose.a; path = ../../../../../usr/local/lib/libt_cose.a; sourceTree = "<group>"; };
@@ -131,14 +123,6 @@
 		E7FDBF8225E2F131007138A8 /* ctoken */ = {
 			isa = PBXGroup;
 			children = (
-				E7FDBF8525E2F159007138A8 /* ctoken_cwt_labels.h */,
-				E7FDBF8A25E2F159007138A8 /* ctoken_decode.h */,
-				E7FDBF8325E2F159007138A8 /* ctoken_eat_labels.h */,
-				E7FDBF8725E2F159007138A8 /* ctoken_encode.h */,
-				E7FDBF8625E2F159007138A8 /* ctoken_psaia_decode.h */,
-				E7FDBF8925E2F159007138A8 /* ctoken_psaia_encode.h */,
-				E7FDBF8825E2F159007138A8 /* ctoken_psaia_labels.h */,
-				E7FDBF8425E2F159007138A8 /* ctoken.h */,
 			);
 			name = ctoken;
 			sourceTree = "<group>";
@@ -276,7 +260,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				"HEADER_SEARCH_PATHS[arch=*]" = /usr/local/include;
+				HEADER_SEARCH_PATHS = "";
+				"HEADER_SEARCH_PATHS[arch=*]" = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -329,6 +314,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -340,6 +326,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					../../ctoken/master/inc,
+					/usr/local/include,
+				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					/usr/local/lib,
 					../../ctoken/master,
@@ -352,6 +342,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
