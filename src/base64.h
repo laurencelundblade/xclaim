@@ -10,6 +10,8 @@
 #define base64_h
 
 #include <stdint.h>
+#include <stdlib.h>
+#include <stddef.h>
 
 char *base64_encode(const unsigned char *data,
                     size_t input_length,

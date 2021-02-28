@@ -15,7 +15,7 @@
 
 #include <stdio.h>
 #include "t_cose/q_useful_buf.h"
-#include "ctoken.h"
+#include "ctoken/ctoken.h"
 
 
 /*  This is a primitive encoder for
@@ -341,8 +341,8 @@ void jtoken_encode_start_submod_section(struct jtoken_encode_ctx  *context);
 
 void jtoken_encode_end_submod_section(struct jtoken_encode_ctx  *context);
 
-void jtoken_encode_open_submod(struct jtoken_encode_ctx *context,
-                               const char               *submod_name);
+void jtoken_encode_open_submod(struct jtoken_encode_ctx   *context,
+                               const struct q_useful_buf_c submod_name);
 
 void jtoken_encode_close_submod_section(struct jtoken_encode_ctx  *context);
 

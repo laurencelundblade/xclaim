@@ -9,9 +9,9 @@
 #include "t_cose/q_useful_buf.h"
 #include <stdlib.h>
 #include <fcntl.h>
-#include "ctoken_decode.h"
+#include "ctoken/ctoken_decode.h"
 #include <sys/errno.h>
-#include "ctoken_encode.h"
+#include "ctoken/ctoken_encode.h"
 
 #include "arg_decode.h"
 

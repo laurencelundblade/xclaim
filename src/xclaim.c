@@ -52,10 +52,10 @@ int xclaim_processor(xclaim_decoder *decoder, xclaim_encoder *encoder)
                  * larger level because it key material and such need to be
                  * supplied. */
                 // TODO: this should include submod name
-                (decoder->get_nested)(decoder->ctx, submod_index, &type, &token);
-                (encoder->output_nested)(encoder->ctx, token);
+                (decoder->get_nested)(decoder->ctx, submod_index, &type,  &submod_name, &token);
+                (encoder->output_nested)(encoder->ctx, submod_name, token);
             } else {
-                (encoder->open_submod)(encoder->ctx, "submod_name"); // TODO: fix this
+                (encoder->open_submod)(encoder->ctx, submod_name); // TODO: fix this
                 xclaim_error = xclaim_processor(decoder, encoder);
                 if(xclaim_error != XCLAIM_SUCCESS) {
                     break;

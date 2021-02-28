@@ -236,11 +236,13 @@ void jtoken_encode_end_submod_section(struct jtoken_encode_ctx *me)
 }
 
 
-void jtoken_encode_open_submod(struct jtoken_encode_ctx *me,
-                               const char               *submod_name)
+void jtoken_encode_open_submod(struct jtoken_encode_ctx   *me,
+                               const struct q_useful_buf_c submod_name)
 {
     indent(me);
-    fprintf(me->out_file, "\"%s\" : {\n", submod_name);
+    fprintf(me->out_file, "\"");
+    fwrite(submod_name.ptr, 1, submod_name.len, me->out_file);
+    fprintf(me->out_file, "\" : {\n");
     me->indent_level++;
 }
 

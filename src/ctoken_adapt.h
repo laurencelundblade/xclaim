@@ -14,8 +14,8 @@
 #define ctoken_adapt_h
 
 #include "xclaim.h"
-#include "ctoken_encode.h"
-#include "ctoken_decode.h"
+#include "ctoken/ctoken_encode.h"
+#include "ctoken/ctoken_decode.h"
 
 
 int xclaim_ctoken_encode_init(xclaim_encoder *out, struct ctoken_encode_ctx *ctx);

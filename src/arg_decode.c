@@ -22,9 +22,9 @@
 
 #include "useful_buf_malloc.h"
 
-#include "ctoken_cwt_labels.h"
+#include "ctoken/ctoken_cwt_labels.h"
 
-#include "ctoken.h" // TODO: this should not be a dependency; issue is location
+#include "ctoken/ctoken.h" // TODO: this should not be a dependency; issue is location
 
 
 
@@ -118,6 +118,9 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
     size_t       claim_count;
 
     memset(arguments, 0, sizeof(*arguments));
+
+    /* Defaults */
+    arguments->output_format = OUT_FORMAT_JSON;
 
     return_value = 0;
 
