@@ -28,18 +28,68 @@
 
 
 /* This drives the encoding of the input in CBOR using ctoken. */
-int encode_as_cbor(xclaim_decoder *xclaim_decoder, FILE *output_file)
+int encode_as_cbor(xclaim_decoder *xclaim_decoder,
+                   FILE           *output_file,
+                   const struct ctoken_arguments *arguments)
 {
     xclaim_encoder            xclaim_encoder;
     struct ctoken_encode_ctx  ctoken_encoder;
     struct q_useful_buf       out_buf;
     struct q_useful_buf_c     completed_token;
+    enum ctoken_protection_t  protection_type;
+    enum xclaim_error_t       xclaim_err;
+    int32_t                   cose_signing_alg;
+    uint32_t                  t_cose_opt_flags;
+    uint32_t                  ctoken_opt_flags;
+    enum ctoken_err_t         ctoken_err;
 
+
+    // TODO: this should not be necessary
+    memset(&ctoken_encoder, 0, sizeof(struct ctoken_encode_ctx));
+
+    cose_signing_alg = -7;
+    t_cose_opt_flags = 0;
+    ctoken_opt_flags = 0;
+
+    switch(arguments->output_protection) {
+        case OUT_PROT_NONE:
+            protection_type = CTOKEN_PROTECTION_NONE;
+            // TODO: could complain if key file and such are set
+            break;
+
+        case OUT_PROT_SIGN:
+            protection_type = CTOKEN_PROTECTION_COSE_SIGN1;
+            cose_signing_alg = arguments->out_sign_algorithm;
+            if(cose_signing_alg == 0) {
+                cose_signing_alg = -7; // TODO: constant for this
+            }
+            if(arguments->out_sign_short_circuit) {
+                // TODO: warn if key and such are set
+                t_cose_opt_flags |= T_COSE_OPT_SHORT_CIRCUIT_SIG;
+
+            }
+            // TODO: will have to handle sign and protect combo
+            // TODO: need to set up further...
+            break;
+
+        default:
+            return 99; // TODO: error code
+    }
+
+    /*     ctoken_encode_init(&encode_ctx,
+                       T_COSE_OPT_SHORT_CIRCUIT_SIG,
+                       0,
+                       CTOKEN_PROTECTION_COSE_SIGN1,
+                       T_COSE_ALGORITHM_ES256);*/
 
     /* Set up the ctoken encoder with all the necessary options.
        This is a lot. There is a lot of work to do. */
     // TODO: further set up needed.
-    ctoken_encode_init(&ctoken_encoder, 0, 0, CTOKEN_PROTECTION_NONE, 0);
+    ctoken_encode_init(&ctoken_encoder,
+                       t_cose_opt_flags,
+                       ctoken_opt_flags,
+                       protection_type,
+                       cose_signing_alg);
 
     /* Set up the xclaim decoder to work with ctoken. */
     xclaim_ctoken_encode_init(&xclaim_encoder, &ctoken_encoder);
@@ -51,9 +101,15 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder, FILE *output_file)
     while(1) {
         ctoken_encode_start(&ctoken_encoder, out_buf);
 
-        xclaim_processor(xclaim_decoder, &xclaim_encoder);
+        xclaim_err = xclaim_processor(xclaim_decoder, &xclaim_encoder);
+        if(xclaim_err != XCLAIM_SUCCESS) {
+            goto Done;
+        }
 
-        ctoken_encode_finish(&ctoken_encoder, &completed_token);
+        ctoken_err = ctoken_encode_finish(&ctoken_encoder, &completed_token);
+        if(ctoken_err != CTOKEN_ERR_SUCCESS) {
+            goto Done;
+        }
 
         if(out_buf.ptr != NULL) {
             // Normal exit from loop
@@ -66,7 +122,10 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder, FILE *output_file)
 
     write_bytes(output_file, completed_token);
 
-    free(out_buf.ptr);
+Done:
+    if(out_buf.ptr != NULL) {
+        free(out_buf.ptr);
+    }
 
     return 0; // TODO: error code
 }
@@ -166,7 +225,7 @@ int ctoken(const struct ctoken_arguments *arguments)
 
     /* Call the outputter to do the actual work */
     if(arguments->output_format == OUT_FORMAT_CBOR) {
-        encode_as_cbor(&decoder, output_file);
+        encode_as_cbor(&decoder, output_file, arguments);
 
     } else {
         encode_as_json(&decoder, output_file);

@@ -10,24 +10,22 @@
  * See BSD-3-Clause license in README.md
  */
 
-
 #include "xclaim.h"
 
 
-
-int xclaim_processor(xclaim_decoder *decoder, xclaim_encoder *encoder)
+enum xclaim_error_t xclaim_processor(xclaim_decoder *decoder, xclaim_encoder *encoder)
 {
     struct q_useful_buf_c submod_name;
     struct q_useful_buf_c token;
     enum ctoken_type_t    type;
-    int                   xclaim_error;
+    enum xclaim_error_t   xclaim_error;
     struct                xclaim claim;
     uint32_t              submod_index;
 
-
-    /* First output the regular claims */
+    /* rewind the decoder to start from the beginning. */
     (decoder->rewind)(decoder->ctx);
 
+    /* First output the regular claims */
     while(1) {
         xclaim_error = (decoder->next_claim)(decoder->ctx, &claim);
         if(xclaim_error != XCLAIM_SUCCESS) {
@@ -36,7 +34,7 @@ int xclaim_processor(xclaim_decoder *decoder, xclaim_encoder *encoder)
         (encoder->output_claim)(encoder->ctx, &claim);
     }
     if(xclaim_error != XCLAIM_NO_MORE) {
-        // Error out
+        /* Error out */
         return xclaim_error;
     }
 
@@ -51,10 +49,11 @@ int xclaim_processor(xclaim_decoder *decoder, xclaim_encoder *encoder)
                  * or there can be recursion, but it recursion must be at a
                  * larger level because it key material and such need to be
                  * supplied. */
-                // TODO: this should include submod name
                 (decoder->get_nested)(decoder->ctx, submod_index, &type,  &submod_name, &token);
                 (encoder->output_nested)(encoder->ctx, submod_name, token);
             } else {
+                /* Is it is a submodule with claims and maybe further
+                 * submodules that are processed by recursion. */
                 (encoder->open_submod)(encoder->ctx, submod_name); // TODO: fix this
                 xclaim_error = xclaim_processor(decoder, encoder);
                 if(xclaim_error != XCLAIM_SUCCESS) {
@@ -68,6 +67,7 @@ int xclaim_processor(xclaim_decoder *decoder, xclaim_encoder *encoder)
             xclaim_error = (decoder->enter_submod(decoder->ctx, submod_index, &submod_name));
         } while (xclaim_error == XCLAIM_SUCCESS || xclaim_error == XCLAIM_SUBMOD_IS_TOKEN);
         (encoder->end_submods_section)(encoder->ctx);
+        
     } else if(xclaim_error == XCLAIM_NO_MORE) {
         xclaim_error = XCLAIM_SUCCESS;
     }

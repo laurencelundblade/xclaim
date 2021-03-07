@@ -19,50 +19,8 @@
 #include <stdio.h>
 
 #include "t_cose/q_useful_buf.h"
-
 #include "useful_buf_malloc.h"
-
 #include "ctoken/ctoken_cwt_labels.h"
-
-#include "ctoken/ctoken.h" // TODO: this should not be a dependency; issue is location
-
-
-
-
-
-
-/* Decodes submod:label:value or label:value, the value of the -claim option
-   All returned strings are malloced
-   return 0 on success, 1 on failure
-   claim_number is 0 if claim label is a string, and non-zero if it is a number */
-int parse_claim_argument(const char *claim_arg,
-                         const char **submod_name,
-                         const char **claim_label,
-                         const char **claim_value,
-                         int64_t    *claim_number);
-
-
-/* pointer in q_useful_buf returned is malloced and must be freed */
-struct q_useful_buf_c convert_to_binary(const char *string);
-
-
-int convert_to_int64(const char *string, int64_t *value);
-
-
-
-const char *cbor_label_to_json_name(int64_t cbor_label);
-
-/* Returns 0 if there is no cbor label for the json name. */
-int64_t json_name_to_cbor_label(const char *json_name);
-
-
-enum ctoken_security_level_t parse_sec_level_value(const  char *sl);
-
-enum ctoken_debug_level_t parse_debug_state(const char *d1);
-
-enum ctoken_intended_use_t parse_intended_use(const char *use);
-
-int parse_location_arg(const char *s, struct ctoken_location_t *location);
 
 
 
@@ -76,7 +34,11 @@ enum arg_id_t {
     INPUT_PROTECTION,
     OUTPUT_PROTECTION,
     OUTPUT_TAGGING,
-    NO_VERIFY
+    NO_VERIFY,
+    OUT_SIGN_ALG,
+    OUT_SIGN_KEY,
+    OUT_SIGN_KID,
+    OUT_SIGN_SHORT_CIRCUIT
 };
 
 
@@ -91,6 +53,10 @@ static const struct option longopts[] = {
     { "out_prot",   required_argument,  NULL,  OUTPUT_PROTECTION },
     { "out_tag",    required_argument,  NULL,  OUTPUT_TAGGING },
     { "no_verify",  no_argument,        NULL,  NO_VERIFY },
+    { "out_sign_alg", required_argument, NULL, OUT_SIGN_ALG },
+    { "out_sign_key", required_argument, NULL, OUT_SIGN_KEY },
+    { "out_sign_key", required_argument, NULL, OUT_SIGN_KID },
+    { "out_sign_short_circuit", no_argument, NULL, OUT_SIGN_SHORT_CIRCUIT},
     { NULL,         0,                  NULL,  0 }
 };
 
@@ -116,11 +82,13 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
     int          selected_opt;
     const char **claim;
     size_t       claim_count;
+    char        *end_of_int;
 
     memset(arguments, 0, sizeof(*arguments));
 
-    /* Defaults */
-    arguments->output_format = OUT_FORMAT_JSON;
+    /* The basic defaults. Others, like default algorithm, are elsewhere. */
+    arguments->output_format     = OUT_FORMAT_JSON;
+    arguments->output_protection = OUT_PROT_NONE;
 
     return_value = 0;
 
@@ -211,6 +179,7 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
                     return_value = 1;
                     goto Done;
                 }
+                break;
 
             case OUTPUT_TAGGING:
                 if(!strcasecmp(optarg, "cwt")) {
@@ -229,6 +198,28 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
                 arguments->no_verify = true;
                 break;
 
+            case OUT_SIGN_ALG:
+                arguments->out_sign_algorithm =  strtol(optarg, &end_of_int, 10);
+                if(*end_of_int != '\0') {
+                    fprintf(stderr, "Bad signing algorithm \"%s\". Should be number from CBOR algorithm registry\n", optarg);
+                    return_value = 1;
+                    goto Done;
+                }
+                break;
+
+            case OUT_SIGN_KEY:
+                arguments->out_sign_key_file = optarg;
+                break;
+
+            case OUT_SIGN_KID:
+                // TODO: check syntax for b64 and translate?
+                arguments->out_sign_kid = optarg;
+                break;
+
+            case OUT_SIGN_SHORT_CIRCUIT:
+                arguments->out_sign_short_circuit = true;
+                break;
+
             default:
                 fprintf(stderr, "Oops. Input parameter parsing went wrong\n");
                 return_value = 1;
@@ -244,75 +235,6 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
 
 
 
-
-
-/* Returned a malloced NULL-terminated string up
- that is the characters up to to the first ':' in input.
- Also return the amount copied.*/
-static const char *copy_up_to_colon(const char *input, size_t *copied)
-{
-    const char *c = strchr(input, ':');
-
-    if(c == NULL) {
-        return NULL;
-    }
-
-    *copied = c - input;
-
-    return strndup(input, c - input);
-}
-
-
-
-/*
- * Public function. See arg_parse.h
- */
-int parse_claim_argument(const char *claim_arg,
-                         const char **submod_name,
-                         const char **claim_label,
-                         const char **claim_value,
-                         int64_t    *claim_number)
-{
-    char       *end;
-    size_t      first_part_length;
-    const char *remains;
-    const char *second_part;
-
-    *submod_name = NULL;
-    *claim_label = NULL;
-    *claim_value = NULL;
-
-    /* decode into submod, label and value */
-    const char *first_part = copy_up_to_colon(claim_arg, &first_part_length);
-    if(first_part == NULL) {
-        /* Something wrong with the claim */
-        return 1;
-    }
-
-    remains = claim_arg + first_part_length + 1;
-
-    second_part = copy_up_to_colon(remains, &first_part_length);
-
-    if(second_part == NULL) {
-        /* Format is label:value */
-        *claim_label = first_part;
-        *claim_value = strdup(remains);
-    } else {
-        /* format is submod:label:value */
-        *submod_name = first_part;
-        *claim_label = second_part;
-        *claim_value = strdup(second_part + first_part_length + 1);
-    }
-
-    /* Is label a string or a number? */
-    *claim_number = strtoll(*claim_label, &end, 10);
-    if(*end != '\0') {
-        /* label is a string. Try to look it up. */
-        *claim_number = json_name_to_cbor_label(*claim_label);
-    }
-
-    return 0;
-}
 
 
 
@@ -387,7 +309,7 @@ static const struct integer_string_map_t intended_uses[] = {
     {CTOKEN_USE_INVALID, NULL}
 };
 
-
+/* TODO: use this or get rid of it
 static const char *int_to_string(const struct integer_string_map_t *map, int64_t cbor_label)
 {
     size_t i;
@@ -400,6 +322,7 @@ static const char *int_to_string(const struct integer_string_map_t *map, int64_t
 
     return NULL;
 }
+*/
 
 
 /* Returns 0 if string was not found in map */
@@ -416,18 +339,91 @@ static int64_t string_to_int(const struct integer_string_map_t *map, const char 
     return map[i].cbor_label;
 }
 
-
-const char *cbor_label_to_json_name(int64_t cbor_label)
+/* TODO: use this or get rid of it
+static const char *cbor_label_to_json_name(int64_t cbor_label)
 {
     return int_to_string(label_map, cbor_label);
 }
+ */
 
 
 /* Returns 0 if there is no cbor label for the json name. */
-int64_t json_name_to_cbor_label(const char *json_name)
+static int64_t json_name_to_cbor_label(const char *json_name)
 {
     return string_to_int(label_map, json_name);
 }
+
+
+
+
+/* Returned a malloced NULL-terminated string up
+ that is the characters up to to the first ':' in input.
+ Also return the amount copied.*/
+static const char *copy_up_to_colon(const char *input, size_t *copied)
+{
+    const char *c = strchr(input, ':');
+
+    if(c == NULL) {
+        return NULL;
+    }
+
+    *copied = c - input;
+
+    return strndup(input, c - input);
+}
+
+
+/*
+ * Public function. See arg_parse.h
+ */
+int parse_claim_argument(const char *claim_arg,
+                         const char **submod_name,
+                         const char **claim_label,
+                         const char **claim_value,
+                         int64_t    *claim_number)
+{
+    char       *end;
+    size_t      first_part_length;
+    const char *remains;
+    const char *second_part;
+
+    *submod_name = NULL;
+    *claim_label = NULL;
+    *claim_value = NULL;
+
+    /* decode into submod, label and value */
+    const char *first_part = copy_up_to_colon(claim_arg, &first_part_length);
+    if(first_part == NULL) {
+        /* Something wrong with the claim */
+        return 1;
+    }
+
+    remains = claim_arg + first_part_length + 1;
+
+    second_part = copy_up_to_colon(remains, &first_part_length);
+
+    if(second_part == NULL) {
+        /* Format is label:value */
+        *claim_label = first_part;
+        *claim_value = strdup(remains);
+    } else {
+        /* format is submod:label:value */
+        *submod_name = first_part;
+        *claim_label = second_part;
+        *claim_value = strdup(second_part + first_part_length + 1);
+    }
+
+    /* Is label a string or a number? */
+    *claim_number = strtoll(*claim_label, &end, 10);
+    if(*end != '\0') {
+        /* label is a string. Try to look it up. */
+        *claim_number = json_name_to_cbor_label(*claim_label);
+    }
+
+    return 0;
+}
+
+
 
 
 static enum ctoken_security_level_t sec_level_x(const char *s)
@@ -448,9 +444,7 @@ static inline enum ctoken_intended_use_t intended_use_from_string(const char *s)
 }
 
 
-
-
-enum ctoken_security_level_t parse_sec_level_value(const  char *sl)
+static enum ctoken_security_level_t parse_sec_level_value(const  char *sl)
 {
     long n;
     char *e;
@@ -474,7 +468,7 @@ enum ctoken_security_level_t parse_sec_level_value(const  char *sl)
 }
 
 
-enum ctoken_debug_level_t parse_debug_state(const char *d1)
+static enum ctoken_debug_level_t parse_debug_state(const char *d1)
 {
     long n;
     char *number_end;
@@ -495,7 +489,7 @@ enum ctoken_debug_level_t parse_debug_state(const char *d1)
 }
 
 
-enum ctoken_intended_use_t parse_intended_use(const char *use)
+static enum ctoken_intended_use_t parse_intended_use(const char *use)
 {
     long n;
     char *number_end;
@@ -521,7 +515,7 @@ enum ctoken_intended_use_t parse_intended_use(const char *use)
  4.5,6.5,8.7,A5555,T9999
 
  */
-int parse_location_arg(const char *s, struct ctoken_location_t *location)
+static int parse_location_arg(const char *s, struct ctoken_location_t *location)
 {
     char *end;
     size_t i = 0;
@@ -580,7 +574,9 @@ static uint16_t hex_char(char c)
 
 /* input is hex digits, e.g. 34a8b20f
    output is a malloced buffer with corresponding binary bytes. */
-struct q_useful_buf_c convert_to_binary(const char *z)
+/* pointer in q_useful_buf returned is malloced and must be freed */
+
+static struct q_useful_buf_c convert_to_binary(const char *z)
 {
     struct q_useful_buf b = useful_malloc(strlen(z)/2);
 
@@ -603,7 +599,7 @@ struct q_useful_buf_c convert_to_binary(const char *z)
 }
 
 
-int convert_to_int64(const char *s, int64_t *v)
+static int convert_to_int64(const char *s, int64_t *v)
 {
     char *end;
     *v = strtoll(s, &end, 10);
@@ -613,9 +609,8 @@ int convert_to_int64(const char *s, int64_t *v)
 
 
 
-
-
 /* Free a pointer if not NULL even if it is const */
+/* TODO: use this or get rid of it. */
 #define FREEIF(x) if(x != NULL){free((void *)x);}
 
 
@@ -630,23 +625,20 @@ static int generic_claim(const char *claim_value, QCBORItem *qcbor_item)
 
 
 
-static int parg_get_next(void *vv, struct xclaim *claim)
+static enum xclaim_error_t parg_get_next(void *me_void, struct xclaim *claim)
 {
-    const char *submod;
-    const char *label;
-    const char *value;
-    int64_t claim_number;
-    int64_t int64_value;
+    const char                  *submod;
+    const char                  *label;
+    const char                  *value;
+    int64_t                      claim_number;
+    int64_t                      int64_value;
     enum ctoken_intended_use_t   intended_use;
     struct q_useful_buf_c        binary_value;
     enum ctoken_security_level_t sec_level;
     enum ctoken_debug_level_t    debug_level;
+    int                          error;
 
-    int error;
-
-
-
-    struct claim_argument_decoder *me = (struct claim_argument_decoder *)vv;
+    struct claim_argument_decoder *me = (struct claim_argument_decoder *)me_void;
 
     if(*me->iterator == NULL) {
         return XCLAIM_NO_MORE;
@@ -655,7 +647,7 @@ static int parg_get_next(void *vv, struct xclaim *claim)
     parse_claim_argument(*me->iterator, &submod, &label, &value, &claim_number);
 
     // TODO: implement submods (lots of work)
-
+    // TODO: better job of unmatched claims
 
 
     claim->qcbor_item.label.int64 = claim_number;
@@ -744,6 +736,7 @@ static int parg_get_next(void *vv, struct xclaim *claim)
     return 0;
 }
 
+
 static void rewind_d(void *ccc)
 {
     struct claim_argument_decoder *ctx = (struct claim_argument_decoder *)ccc;
@@ -751,7 +744,8 @@ static void rewind_d(void *ccc)
     ctx->iterator = ctx->claim_args;
 }
 
-static int enter_submod(void *ccc, uint32_t n, struct q_useful_buf_c *name)
+
+static enum xclaim_error_t enter_submod(void *ccc, uint32_t n, struct q_useful_buf_c *name)
 {
     //struct claim_argument_decoder *ctx = (struct claim_argument_decoder *)ccc;
 
@@ -767,12 +761,10 @@ void xclaim_argument_decode_init(xclaim_decoder *ic, struct claim_argument_decod
 
     ic->ctx = ctx;
 
-    ic->rewind     = rewind_d;
-    ic->next_claim = parg_get_next;
+    ic->rewind       = rewind_d;
+    ic->next_claim   = parg_get_next;
     ic->enter_submod = enter_submod;
-    ic->exit_submod = NULL;
-    ic->get_nested = NULL;
+    ic->exit_submod  = NULL;
+    ic->get_nested   = NULL;
 }
-
-
 

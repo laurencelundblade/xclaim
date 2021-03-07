@@ -65,7 +65,7 @@ xclaim_encode_generic(struct jtoken_encode_ctx *ectx, const QCBORItem *claim_ite
 }
 
 
-static int
+static enum xclaim_error_t
 jtoken_output_claim(void *ctx, const struct xclaim *claim)
 {
     struct jtoken_encode_ctx *me = ctx;
@@ -121,18 +121,49 @@ jtoken_output_claim(void *ctx, const struct xclaim *claim)
 }
 
 
+static enum xclaim_error_t
+jtoken_encode_start_submod_section_x(void *ctx)
+{
+    struct jtoken_encode_ctx *me = (struct jtoken_encode_ctx *)ctx;
+    jtoken_encode_start_submod_section(me);
+    return XCLAIM_SUCCESS;
+}
+
+static enum xclaim_error_t
+jtoken_encode_end_submod_section_x(void *ctx)
+{
+    struct jtoken_encode_ctx *me = (struct jtoken_encode_ctx *)ctx;
+    jtoken_encode_end_submod_section(me);
+    return XCLAIM_SUCCESS;
+}
+
+static enum xclaim_error_t
+jtoken_encode_open_submod_x(void *ctx, struct q_useful_buf_c submod_name )
+{
+    struct jtoken_encode_ctx *me = (struct jtoken_encode_ctx *)ctx;
+
+    jtoken_encode_open_submod(me,  submod_name);
+    return XCLAIM_SUCCESS;
+}
+
+static enum xclaim_error_t
+jtoken_encode_close_submod_section_x(void *ctx)
+{
+    struct jtoken_encode_ctx *me = (struct jtoken_encode_ctx *)ctx;
+    jtoken_encode_close_submod_section(me);
+    return XCLAIM_SUCCESS;
+}
+
 
 int xclaim_jtoken_encode_init(xclaim_encoder *out, struct jtoken_encode_ctx *ctx)
 {
     out->ctx = ctx;
 
-    out->output_claim = jtoken_output_claim;
-
-    /* All these casts are just for the context pointer, the void * */
-    out->start_submods_section = (int (*)(void *))jtoken_encode_start_submod_section;
-    out->end_submods_section = (int (*)(void *))jtoken_encode_end_submod_section;
-    out->open_submod = (int (*)(void *, struct q_useful_buf_c))jtoken_encode_open_submod;
-    out->close_submod = (int (*)(void *))jtoken_encode_close_submod_section;
+    out->output_claim          = jtoken_output_claim;
+    out->start_submods_section = jtoken_encode_start_submod_section_x;
+    out->end_submods_section   = jtoken_encode_end_submod_section_x;
+    out->open_submod           = jtoken_encode_open_submod_x;
+    out->close_submod          = jtoken_encode_close_submod_section_x;
 
     return 0;
 }

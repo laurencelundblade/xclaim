@@ -61,8 +61,8 @@ int xclaim_encode_generic(struct ctoken_encode_ctx *ectx, const QCBORItem *claim
 }
 
 
-static
-int encode_xclaim(void *ctx, const struct xclaim *claim)
+static enum xclaim_error_t
+encode_xclaim(void *ctx, const struct xclaim *claim)
 {
     struct ctoken_encode_ctx *e_ctx = (struct ctoken_encode_ctx *)ctx;
     switch(claim->qcbor_item.label.int64) {
@@ -120,40 +120,72 @@ int encode_xclaim(void *ctx, const struct xclaim *claim)
     return 0;
 }
 
+static enum xclaim_error_t
+ctoken_encode_open_submod_x(void *ctx, struct q_useful_buf_c submod_name)
+{
+    struct ctoken_encode_ctx *e_ctx = (struct ctoken_encode_ctx *)ctx;
+    ctoken_encode_open_submod(e_ctx, submod_name);
+    return XCLAIM_SUCCESS;
+}
 
-int xclaim_ctoken_encode_init(xclaim_encoder *out, struct ctoken_encode_ctx *ctx)
+
+static enum xclaim_error_t
+ctoken_encode_close_submod_x(void *ctx)
+{
+    struct ctoken_encode_ctx *e_ctx = (struct ctoken_encode_ctx *)ctx;
+    ctoken_encode_close_submod(e_ctx);
+    return XCLAIM_SUCCESS;
+}
+
+
+static enum xclaim_error_t
+ctoken_encode_start_submod_section_x(void *ctx)
+{
+    struct ctoken_encode_ctx *e_ctx = (struct ctoken_encode_ctx *)ctx;
+    ctoken_encode_start_submod_section(e_ctx);
+    return XCLAIM_SUCCESS;
+}
+
+
+static enum xclaim_error_t
+ctoken_encode_end_submod_section_x(void *ctx)
+{
+    struct ctoken_encode_ctx *e_ctx = (struct ctoken_encode_ctx *)ctx;
+    ctoken_encode_end_submod_section(e_ctx);
+    return XCLAIM_SUCCESS;
+}
+
+void xclaim_ctoken_encode_init(xclaim_encoder *out, struct ctoken_encode_ctx *ctx)
 {
     out->ctx = ctx;
 
     out->output_claim          = encode_xclaim;
-
-    /* Can use ctoken methods directly. Casts are only for the first arg */
-    out->open_submod           = (int (*)(void *, const struct q_useful_buf_c))ctoken_encode_open_submod;
-    out->close_submod          = (int (*)(void *))ctoken_encode_close_submod;
-    out->start_submods_section = (int (*)(void *))ctoken_encode_start_submod_section;
-    out->end_submods_section   = (int (*)(void *))ctoken_encode_start_submod_section;
-
-    return 0;
+    out->open_submod           = ctoken_encode_open_submod_x;
+    out->close_submod          = ctoken_encode_close_submod_x;
+    out->start_submods_section = ctoken_encode_start_submod_section_x;
+    out->end_submods_section   = ctoken_encode_end_submod_section_x;
 }
 
 
 
 
-static int
+static enum xclaim_error_t
 decode_next_xclaim(void *decode_ctx, struct xclaim *xclaim)
 {
     enum ctoken_err_t         err;
+    enum xclaim_error_t       return_value;
     struct ctoken_decode_ctx *dctx = (struct ctoken_decode_ctx *)decode_ctx;
 
     err = ctoken_decode_next_claim(dctx, &(xclaim->qcbor_item));
     if(err == CTOKEN_ERR_NO_MORE_CLAIMS) {
         /* End of claims or error getting them. */
-        err =  (enum ctoken_err_t)XCLAIM_NO_MORE;
+        return_value =  XCLAIM_NO_MORE;
         goto Done;
     } else if(err != 0) {
-        err += XCLAIM_CTOKEN_ERROR_BASE;
+        return_value = (enum xclaim_error_t)XCLAIM_CTOKEN_ERROR_BASE + err;
         goto Done;
     }
+    return_value = XCLAIM_SUCCESS;
 
     if(xclaim->qcbor_item.label.int64 == CTOKEN_EAT_LABEL_LOCATION) {
        ctoken_decode_location(dctx, &(xclaim->u.location_claim));
@@ -162,13 +194,13 @@ decode_next_xclaim(void *decode_ctx, struct xclaim *xclaim)
     }
 
 Done:
-    return err;
+    return return_value;
 }
 
 
 
 //static enum xclaim_errors_t e_submod(void *decode_ctx, uint32_t n, struct q_useful_buf_c *x)
-static int e_submod(void *decode_ctx, uint32_t n, struct q_useful_buf_c *x)
+static enum xclaim_error_t e_submod(void *decode_ctx, uint32_t n, struct q_useful_buf_c *x)
 {
     struct ctoken_decode_ctx *dctx = (struct ctoken_decode_ctx *)decode_ctx;
 
@@ -198,8 +230,8 @@ xclaim_ctoken_decode_setup(xclaim_decoder *ic, struct ctoken_decode_ctx *ctx)
     /* Can use ctoken methods directly. Casts are only for the first arg */
     // TODO: glue functions to translate error codes for these.
     ic->rewind       = (void (*)(void *))ctoken_decode_rewind;
-    ic->exit_submod  = (int (*)(void *))ctoken_decode_exit_submod;
-    ic->get_nested   = (int (*)(void *, uint32_t, enum ctoken_type_t *, struct q_useful_buf_c *, struct q_useful_buf_c *))ctoken_decode_get_nth_nested_token;
+    ic->exit_submod  = (enum xclaim_error_t (*)(void *))ctoken_decode_exit_submod;
+    ic->get_nested   = (enum xclaim_error_t (*)(void *, uint32_t, enum ctoken_type_t *, struct q_useful_buf_c *, struct q_useful_buf_c *))ctoken_decode_get_nth_nested_token;
 }
 
 

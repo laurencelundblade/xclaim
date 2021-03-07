@@ -18,7 +18,7 @@
 #include "ctoken/ctoken_decode.h"
 
 
-int xclaim_ctoken_encode_init(xclaim_encoder *out, struct ctoken_encode_ctx *ctx);
+void xclaim_ctoken_encode_init(xclaim_encoder *out, struct ctoken_encode_ctx *ctx);
 
 
 int xclaim_ctoken_decode_init(xclaim_decoder           *xclaim_decoder,
