@@ -34,7 +34,11 @@ enum arg_id_t {
     INPUT_PROTECTION,
     OUTPUT_PROTECTION,
     OUTPUT_TAGGING,
-    NO_VERIFY
+    NO_VERIFY,
+    OUT_SIGN_ALG,
+    OUT_SIGN_KEY,
+    OUT_SIGN_KID,
+    OUT_SIGN_SHORT_CIRCUIT
 };
 
 
@@ -49,6 +53,10 @@ static const struct option longopts[] = {
     { "out_prot",   required_argument,  NULL,  OUTPUT_PROTECTION },
     { "out_tag",    required_argument,  NULL,  OUTPUT_TAGGING },
     { "no_verify",  no_argument,        NULL,  NO_VERIFY },
+    { "out_sign_alg", required_argument, NULL, OUT_SIGN_ALG },
+    { "out_sign_key", required_argument, NULL, OUT_SIGN_KEY },
+    { "out_sign_key", required_argument, NULL, OUT_SIGN_KID },
+    { "out_sign_short_circuit", no_argument, NULL, OUT_SIGN_SHORT_CIRCUIT},
     { NULL,         0,                  NULL,  0 }
 };
 
@@ -74,11 +82,13 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
     int          selected_opt;
     const char **claim;
     size_t       claim_count;
+    char        *end_of_int;
 
     memset(arguments, 0, sizeof(*arguments));
 
-    /* Defaults */
-    arguments->output_format = OUT_FORMAT_JSON;
+    /* The basic defaults. Others, like default algorithm, are elsewhere. */
+    arguments->output_format     = OUT_FORMAT_JSON;
+    arguments->output_protection = OUT_PROT_NONE;
 
     return_value = 0;
 
@@ -169,6 +179,7 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
                     return_value = 1;
                     goto Done;
                 }
+                break;
 
             case OUTPUT_TAGGING:
                 if(!strcasecmp(optarg, "cwt")) {
@@ -185,6 +196,28 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
 
             case NO_VERIFY:
                 arguments->no_verify = true;
+                break;
+
+            case OUT_SIGN_ALG:
+                arguments->out_sign_algorithm =  strtol(optarg, &end_of_int, 10);
+                if(*end_of_int != '\0') {
+                    fprintf(stderr, "Bad signing algorithm \"%s\". Should be number from CBOR algorithm registry\n", optarg);
+                    return_value = 1;
+                    goto Done;
+                }
+                break;
+
+            case OUT_SIGN_KEY:
+                arguments->out_sign_key_file = optarg;
+                break;
+
+            case OUT_SIGN_KID:
+                // TODO: check syntax for b64 and translate?
+                arguments->out_sign_kid = optarg;
+                break;
+
+            case OUT_SIGN_SHORT_CIRCUIT:
+                arguments->out_sign_short_circuit = true;
                 break;
 
             default:
