@@ -21,6 +21,7 @@
 #include <stdint.h>
 
 #include "useful_file_io.h"
+#include "openssl_keys.h"
 
 #include "xclaim.h"
 
@@ -42,6 +43,7 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder,
     uint32_t                  t_cose_opt_flags;
     uint32_t                  ctoken_opt_flags;
     enum ctoken_err_t         ctoken_err;
+    struct t_cose_key         out_sign_key;
 
 
     // TODO: this should not be necessary
@@ -76,11 +78,16 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder,
             return 99; // TODO: error code
     }
 
-    /*     ctoken_encode_init(&encode_ctx,
-                       T_COSE_OPT_SHORT_CIRCUIT_SIG,
-                       0,
-                       CTOKEN_PROTECTION_COSE_SIGN1,
-                       T_COSE_ALGORITHM_ES256);*/
+
+    memset(&out_sign_key, 0, sizeof(struct t_cose_key));
+
+    if(arguments->out_sign_key_file != NULL) {
+        int err = read_private_ec_key_from_file(arguments->out_sign_key_file, &out_sign_key);
+        if(err) {
+            return 77;
+        }
+    }
+
 
     /* Set up the ctoken encoder with all the necessary options.
        This is a lot. There is a lot of work to do. */
@@ -90,6 +97,13 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder,
                        ctoken_opt_flags,
                        protection_type,
                        cose_signing_alg);
+
+    if(arguments->out_sign_key_file != NULL) {
+        ctoken_encode_set_key(&ctoken_encoder,
+                              out_sign_key,
+                              NULLUsefulBufC); // TODO: fix the kid
+                              //arguments->out_sign_kid);
+    }
 
     /* Set up the xclaim decoder to work with ctoken. */
     xclaim_ctoken_encode_init(&xclaim_encoder, &ctoken_encoder);
@@ -195,7 +209,18 @@ int ctoken(const struct ctoken_arguments *arguments)
 
         // TODO: need to handle JSON too. This assumes file is CBOR
         // TODO: key material and options for decoding CBOR
-        if(xclaim_ctoken_decode_init(&decoder, &cctx, input_bytes)) {
+
+        struct t_cose_key v_key;
+        v_key.crypto_lib = T_COSE_CRYPTO_LIB_OPENSSL;
+        v_key.k.key_ptr = NULL;
+        if(arguments->in_verify_key_file) {
+            int x = read_pub_ec_key_from_file(arguments->in_verify_key_file, &v_key);
+            if(x) {
+                return 999;
+            }
+
+        }
+        if(xclaim_ctoken_decode_init(&decoder, &cctx, input_bytes, v_key)) {
             return 1;
         }
 

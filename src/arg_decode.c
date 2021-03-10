@@ -38,7 +38,8 @@ enum arg_id_t {
     OUT_SIGN_ALG,
     OUT_SIGN_KEY,
     OUT_SIGN_KID,
-    OUT_SIGN_SHORT_CIRCUIT
+    OUT_SIGN_SHORT_CIRCUIT,
+    IN_VERIFY_KEY,
 };
 
 
@@ -57,6 +58,7 @@ static const struct option longopts[] = {
     { "out_sign_key", required_argument, NULL, OUT_SIGN_KEY },
     { "out_sign_key", required_argument, NULL, OUT_SIGN_KID },
     { "out_sign_short_circuit", no_argument, NULL, OUT_SIGN_SHORT_CIRCUIT},
+    { "in_verify_key", required_argument, NULL, IN_VERIFY_KEY},
     { NULL,         0,                  NULL,  0 }
 };
 
@@ -218,6 +220,10 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
 
             case OUT_SIGN_SHORT_CIRCUIT:
                 arguments->out_sign_short_circuit = true;
+                break;
+
+            case IN_VERIFY_KEY:
+                arguments->in_verify_key_file = optarg;
                 break;
 
             default:
