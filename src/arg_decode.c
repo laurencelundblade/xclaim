@@ -24,6 +24,57 @@
 
 
 
+/* returns 4 binary bits corresponding to hex character or
+ 0xffff if character is not a hex character. */
+static uint16_t hex_char(char c)
+{
+    if(c >= '0' && c <= '9') {
+        return c - '0';
+    } else if(c >= 'a' && c <= 'f') {
+        return c - 'a' + 10;
+    } else if(c >= 'A' && c <= 'F') {
+        return c - 'A' + 10;
+    } else {
+        return 0xffff;
+    }
+}
+
+
+static int convert_to_int64(const char *s, int64_t *v)
+{
+    char *end;
+    *v = strtoll(s, &end, 10);
+    return *end == '\0' ? 0 : 1;
+}
+
+
+/* input is hex digits, e.g. 34a8b20f
+   output is a malloced buffer with corresponding binary bytes. */
+/* pointer in q_useful_buf returned is malloced and must be freed */
+
+static struct q_useful_buf_c convert_to_binary(const char *z)
+{
+    struct q_useful_buf b = useful_malloc(strlen(z)/2);
+
+    UsefulOutBuf OB;
+
+    UsefulOutBuf_Init(&OB, b);
+
+    while(*z) {
+        uint32_t v = (hex_char(*z) << 4) + hex_char(*(z+1));
+        if(v > 0xff) {
+            free(b.ptr);
+            return NULL_Q_USEFUL_BUF_C;
+        }
+
+        UsefulOutBuf_AppendByte(&OB, (uint8_t)v);
+        z += 2;
+    }
+
+    return UsefulOutBuf_OutUBuf(&OB);;
+}
+
+
 /* Command line option indexes used with getopt(). */
 enum arg_id_t {
     INPUT_FILE,
@@ -213,7 +264,11 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
 
             case OUT_SIGN_KID:
                 // TODO: check syntax for b64 and translate?
-                arguments->out_sign_kid = optarg;
+                arguments->out_sign_kid = convert_to_binary(optarg);
+                if(q_useful_buf_c_is_null(arguments->out_sign_kid)) {
+                    fprintf(stderr, "bad byte string value \"%s\" for kid\n", optarg);
+                    return 1;
+                }
                 break;
 
             case OUT_SIGN_SHORT_CIRCUIT:
@@ -554,57 +609,6 @@ static int parse_location_arg(const char *s, struct ctoken_location_t *location)
     }
 }
 
-
-
-/* returns 4 binary bits corresponding to hex character or
- 0xffff if character is not a hex character. */
-static uint16_t hex_char(char c)
-{
-    if(c >= '0' && c <= '9') {
-        return c - '0';
-    } else if(c >= 'a' && c <= 'f') {
-        return c - 'a' + 10;
-    } else if(c >= 'A' && c <= 'F') {
-        return c - 'A' + 10;
-    } else {
-        return 0xffff;
-    }
-}
-
-
-/* input is hex digits, e.g. 34a8b20f
-   output is a malloced buffer with corresponding binary bytes. */
-/* pointer in q_useful_buf returned is malloced and must be freed */
-
-static struct q_useful_buf_c convert_to_binary(const char *z)
-{
-    struct q_useful_buf b = useful_malloc(strlen(z)/2);
-
-    UsefulOutBuf OB;
-
-    UsefulOutBuf_Init(&OB, b);
-
-    while(*z) {
-        uint32_t v = (hex_char(*z) << 4) + hex_char(*(z+1));
-        if(v > 0xff) {
-            free(b.ptr);
-            return NULL_Q_USEFUL_BUF_C;
-        }
-
-        UsefulOutBuf_AppendByte(&OB, (uint8_t)v);
-        z += 2;
-    }
-
-    return UsefulOutBuf_OutUBuf(&OB);;
-}
-
-
-static int convert_to_int64(const char *s, int64_t *v)
-{
-    char *end;
-    *v = strtoll(s, &end, 10);
-    return *end == '\0' ? 0 : 1;
-}
 
 
 

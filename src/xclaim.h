@@ -1,14 +1,14 @@
 /*
-* xclaim.h
-*
-* Copyright (c) 2021, Laurence Lundblade.
-*
-* Created by Laurence Lundblade on 2/17/21.
-*
-* SPDX-License-Identifier: BSD-3-Clause
-*
-* See BSD-3-Clause license in README.md
-*/
+ * xclaim.h
+ *
+ * Copyright (c) 2021, Laurence Lundblade.
+ *
+ * Created by Laurence Lundblade on 2/17/21.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * See BSD-3-Clause license in README.md
+ */
 
 #ifndef xclaim_h
 #define xclaim_h
@@ -145,7 +145,7 @@ typedef struct  {
     /* Close of a submodule. */
     enum xclaim_error_t (*close_submod)(void *ctx);
 
-    /* Add a nested tokento a submodules section. */
+    /* Add a nested token to a submodules section. */
     enum xclaim_error_t (*output_nested)(void                       *ctx,
                                          const struct q_useful_buf_c submod_name,
                                          struct q_useful_buf_c       nested_token);
