@@ -35,7 +35,7 @@ void jtoken_encode_start(struct jtoken_encode_ctx *me)
     me->indent_level = 1;
 }
 
-void xjtoken_encode_finish(struct jtoken_encode_ctx *me)
+void jtoken_encode_finish(struct jtoken_encode_ctx *me)
 {
     fprintf(me->out_file, "}\n");
 }
