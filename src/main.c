@@ -1,10 +1,14 @@
-//
-//  decode_token.c
-//  CToken
-//
-//  Created by Laurence Lundblade on 1/11/21.
-//  Copyright © 2021 Laurence Lundblade. All rights reserved.
-//
+/*
+ * main.c
+ *
+ * Copyright (c) 2021, Laurence Lundblade.
+ *
+ * Created by Laurence Lundblade on 2/14/21.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * See BSD-3-Clause license in README.md
+*/
 
 #include "t_cose/q_useful_buf.h"
 #include <stdlib.h>
@@ -90,6 +94,10 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder,
                        ctoken_opt_flags,
                        protection_type,
                        cose_signing_alg);
+
+    if(!q_useful_buf_c_is_null(arguments->out_sign_kid)) {
+        //ctoken_encode_set_kid
+    }
 
     /* Set up the xclaim decoder to work with ctoken. */
     xclaim_ctoken_encode_init(&xclaim_encoder, &ctoken_encoder);
