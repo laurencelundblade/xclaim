@@ -1,13 +1,13 @@
 /*
-* arg_decode.h
-*
-* Copyright (c) 2021, Laurence Lundblade.
-*
-* Created by Laurence Lundblade on 1/29/21.
-*
-* SPDX-License-Identifier: BSD-3-Clause
-*
-* See BSD-3-Clause license in README.md
+ * arg_decode.h
+ *
+ * Copyright (c) 2021, Laurence Lundblade.
+ *
+ * Created by Laurence Lundblade on 1/29/21.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * See BSD-3-Clause license in README.md
 */
 
 #ifndef arg_parse_h
@@ -81,9 +81,9 @@ struct ctoken_arguments {
 
     const char *out_sign_key_file;
     bool        out_sign_short_circuit;
-    const char *out_sign_kid;
     const char *out_certs_file;
     int32_t     out_sign_algorithm;
+    struct q_useful_buf_c out_sign_kid;
 
     const char *in_verify_key_file;
 

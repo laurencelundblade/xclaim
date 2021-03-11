@@ -1,0 +1,106 @@
+# Makefile -- UNIX-style make for xclaim using OpenSSL crypto
+#
+# Copyright (c) 2019-2021, Laurence Lundblade. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# See BSD-3-Clause license in README.md
+#
+
+# ---- comment ----
+# This is for OpenSSL Crypto. Adjust CRYPTO_INC and CRYPTO_LIB for the location of
+# the openssl libraries on your build machine.
+
+
+# ---- QCBOR location ----
+# This is for direct reference to QCBOR that is not installed in
+# /usr/local or some system location. The path may need to be
+# adjusted for your location of QCBOR.
+#QCBOR_DIR=../../QCBOR/master
+#QCBOR_INC=-I $(QCBOR_DIR)/inc
+#QCBOR_LIB=$(QCBOR_DIR)/libqcbor.a
+
+# This is for reference to QCBOR that has been installed in
+# /usr/local/ or in some system location. This will typically
+# use dynamic linking if there is a libqcbor.so
+QCBOR_INC=-I /usr/local/include
+QCBOR_LIB=-lqcbor
+
+
+# ---- t_cose location ----
+# Adjust this to the location of t_cose in your build environment
+#T_COSE_DIR=../../t_cose/master
+#T_COSE_INC= -I $(T_COSE_DIR)/inc
+#T_COSE_LIB=$(T_COSE_DIR)/libt_cose.a
+
+# This is for reference to QCBOR that has been installed in
+# /usr/local/ or in some system location. This will typically
+# use dynamic linking if there is a libqcbor.so
+T_COSE_INC=-I /usr/local/include
+T_COSE_LIB=-lt_cose
+
+
+# ---- ctoken location ----
+# Adjust this to the location of t_cose in your build environment
+CTOKEN_DIR=../../ctoken/master
+CTOKEN_INC= -I $(CTOKEN_DIR)/inc
+CTOKEN_LIB=$(CTOKEN_DIR)/libctoken.a
+
+# This is for reference to QCBOR that has been installed in
+# /usr/local/ or in some system location. This will typically
+# use dynamic linking if there is a libqcbor.so
+#T_COSE_INC=-I /usr/local/include
+#T_COSE_LIB=-lt_cose
+
+
+
+# ---- crypto configuration -----
+# Set up for OpenSSL. This may have to be adjusted for your build environment.
+#../../openssl/openssl-1.1.1b/include/openssl -I ../../openssl/openssl-1.1.1b/include
+#../../openssl/openssl-1.1.1b/libcrypto.a
+CRYPTO_INC=-I /usr/local/include
+CRYPTO_LIB=-lcrypto
+
+# ---- compiler configuration -----
+# Optimize for size
+C_OPTS=-Os -fPIC
+
+# The following are used before a release of t_cose help to make sure
+# the code compiles and runs in the most strict environments, but not
+# all compilers support them so they are not turned on.
+#C_OPTS=-Os -fpic -Wall -pedantic-errors -Wextra -Wshadow -Wparentheses -Wconversion -xc -std=c99
+
+
+
+# ---- the main body that is invariant ----
+INC=-I src
+ALL_INC=$(CRYPTO_INC) $(QCBOR_INC) $(T_COSE_INC) $(CTOKEN_INC) $(INC) 
+CFLAGS=$(ALL_INC) $(C_OPTS) $(CRYPTO_CONFIG_OPTS)
+
+SRC_OBJ=src/arg_decode.o src/base64.o src/ctoken_adapt.o src/jtoken_adapt.o \
+        src/jtoken_encode.o src/main.o src/useful_buf_malloc.o \
+        src/useful_file_io.o src/xclaim.o
+
+
+all:	xclaim
+
+
+xclaim: $(SRC_OBJ)
+	cc -o $@ $^ $(QCBOR_LIB) $(T_COSE_LIB) $(CTOKEN_LIB) $(CRYPTO_LIB) 
+
+
+clean:
+	rm -f $(SRC_OBJ) 
+
+
+# ---- source dependecies -----
+src/arg_decode.c: src/arg_decode.h src/xclaim.h src/useful_buf_malloc.h
+src/base64.c: src/base64.h
+src/ctoken_adapt.c: src/ctoken_adapt.h src/xclaim.c
+src/jtoken_adapt.c: src/jtoken_adapt.h src/jtoken_encode.h src/xclaim.h
+src/jtoken_encode.c: src/jtoken_encode.h src/base64.h
+src/main.c: src/arg_decode.h src/jtoken_adapt.h src/ctoken_adapt.h src/xclaim.h
+src/useful_buf_malloc.c: src/useful_buf_malloc.h
+src/useful_file_io.c: src/useful_file_io.h
+src/claim.c: src/claim.h
+
