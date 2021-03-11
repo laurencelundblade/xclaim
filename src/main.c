@@ -12,6 +12,7 @@
 #include "ctoken/ctoken_decode.h"
 #include <sys/errno.h>
 #include "ctoken/ctoken_encode.h"
+#include <string.h>
 
 #include "arg_decode.h"
 
@@ -172,12 +173,23 @@ int encode_as_json(xclaim_decoder *in, FILE *output_file)
 
 int ctoken(const struct ctoken_arguments *arguments)
 {
-    struct q_useful_buf_c    input_bytes = NULL_Q_USEFUL_BUF_C;
-    FILE                    *output_file;
-    struct ctoken_decode_ctx cctx;
+    struct q_useful_buf_c         input_bytes;
+    FILE                         *output_file;
+    struct ctoken_decode_ctx      cctx;
     struct claim_argument_decoder parg;
+    struct t_cose_key             verification_key;
+    xclaim_decoder                decoder;
+    int                           return_value;
 
-    xclaim_decoder decoder;
+    verification_key.crypto_lib = T_COSE_CRYPTO_LIB_OPENSSL;
+    verification_key.k.key_ptr = NULL;
+
+    output_file = NULL;
+
+    input_bytes = NULL_Q_USEFUL_BUF_C;
+
+    return_value = 0;
+
 
     /* Set up the xlaim_decoder object first. The type of this object
        depends on the input type (e.g. CBOR or command line arguments
@@ -188,7 +200,8 @@ int ctoken(const struct ctoken_arguments *arguments)
         /* Input is a file, not claim arguments */
         if(arguments->claims) {
             fprintf(stderr, "Can't give -in option and -claim option at the same time (yet)\n");
-            return -9;
+            return_value = 1;
+            goto Done;
         }
 
         int file_descriptor;
@@ -197,31 +210,31 @@ int ctoken(const struct ctoken_arguments *arguments)
         } else {
             file_descriptor = open(arguments->input_file, O_RDONLY);
             if(file_descriptor < 0) {
-                fprintf(stderr, "can't open input file \"%s\" (%d)\n", arguments->input_file, errno);
-                return -1;
+                fprintf(stderr, "can't open input file \"%s\" (%s)\n",
+                        arguments->input_file, strerror(errno));
+                return_value = 1;
+                goto Done;
             }
         }
         input_bytes = read_file(file_descriptor);
         if(UsefulBuf_IsNULLC(input_bytes)) {
             fprintf(stderr, "error reading input file \"%s\"\n", arguments->input_file);
-            return -2;
+            return_value = 1;
+            goto Done;
         }
 
         // TODO: need to handle JSON too. This assumes file is CBOR
-        // TODO: key material and options for decoding CBOR
-
-        struct t_cose_key v_key;
-        v_key.crypto_lib = T_COSE_CRYPTO_LIB_OPENSSL;
-        v_key.k.key_ptr = NULL;
         if(arguments->in_verify_key_file) {
-            int x = read_pub_ec_key_from_file(arguments->in_verify_key_file, &v_key);
+            int x = read_pub_ec_key_from_file(arguments->in_verify_key_file, &verification_key);
             if(x) {
-                return 999;
+                return_value = 1;
+                goto Done;
             }
 
         }
-        if(xclaim_ctoken_decode_init(&decoder, &cctx, input_bytes, v_key)) {
-            return 1;
+        if(xclaim_ctoken_decode_init(&decoder, &cctx, input_bytes, verification_key)) {
+            return_value = 1;
+            goto Done;
         }
 
     } else {
@@ -231,8 +244,8 @@ int ctoken(const struct ctoken_arguments *arguments)
 
         } else {
             fprintf(stderr, "No input given (neither -in or -claim given)\n");
-            return -88;
-        }
+            return_value = 1;
+            goto Done;        }
     }
 
 
@@ -241,7 +254,7 @@ int ctoken(const struct ctoken_arguments *arguments)
         output_file = fopen(arguments->output_file, "w");
         if(output_file == NULL) {
             fprintf(stderr, "error opening output file \"%s\"\n", arguments->output_file);
-            return -4;
+            goto Done;
         }
     } else {
         output_file = stdout;
@@ -257,7 +270,12 @@ int ctoken(const struct ctoken_arguments *arguments)
 
     }
 
-    fclose(output_file);
+Done:
+    if(output_file != NULL) {
+        fclose(output_file);
+    }
+
+    free_ec_key(verification_key);
 
     return 0;
 }
