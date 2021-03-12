@@ -15,6 +15,8 @@
 #include "ctoken/ctoken_encode.h"
 #include "ctoken/ctoken_decode.h"
 
+#include <stdio.h> /* For error prints */
+
 
 
 int xclaim_encode_generic(struct ctoken_encode_ctx *ectx, const QCBORItem *claim_item)
@@ -276,14 +278,20 @@ xclaim_ctoken_decode_setup(xclaim_decoder *ic, struct ctoken_decode_ctx *ctx)
 
 int xclaim_ctoken_decode_init(xclaim_decoder           *xclaim_decoder,
                               struct ctoken_decode_ctx *ctx,
-                              struct q_useful_buf_c     input_bytes)
+                              struct q_useful_buf_c     input_bytes,
+                              struct t_cose_key         verification_key)
 {
-    int error;
+    enum ctoken_err_t error;
 
     ctoken_decode_init(ctx, 0, 0, CTOKEN_PROTECTION_NONE);
 
+    if(verification_key.k.key_ptr != NULL) {
+        ctoken_decode_set_verification_key(ctx, verification_key);
+    }
+
     error = ctoken_decode_validate_token(ctx, input_bytes);
     if(error) {
+        fprintf(stderr, "token validation failed. Ctoken error %d\n", error);
         return -9;
     }
 

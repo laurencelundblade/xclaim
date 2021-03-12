@@ -16,6 +16,7 @@
 #include "xclaim.h"
 #include "ctoken/ctoken_encode.h"
 #include "ctoken/ctoken_decode.h"
+#include "t_cose/t_cose_common.h"
 
 
 void xclaim_ctoken_encode_init(xclaim_encoder *out, struct ctoken_encode_ctx *ctx);
@@ -23,6 +24,7 @@ void xclaim_ctoken_encode_init(xclaim_encoder *out, struct ctoken_encode_ctx *ct
 
 int xclaim_ctoken_decode_init(xclaim_decoder           *xclaim_decoder,
                               struct ctoken_decode_ctx *ctx,
-                              struct q_useful_buf_c     input_bytes);
+                              struct q_useful_buf_c     input_bytes,
+                              struct t_cose_key         verification_key);
 
 #endif /* ctoken_adapt_h */

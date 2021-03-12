@@ -79,7 +79,7 @@ CFLAGS=$(ALL_INC) $(C_OPTS) $(CRYPTO_CONFIG_OPTS)
 
 SRC_OBJ=src/arg_decode.o src/base64.o src/ctoken_adapt.o src/jtoken_adapt.o \
         src/jtoken_encode.o src/main.o src/useful_buf_malloc.o \
-        src/useful_file_io.o src/xclaim.o
+        src/useful_file_io.o src/xclaim.o src/openssl_keys.o
 
 
 all:	xclaim
@@ -94,13 +94,15 @@ clean:
 
 
 # ---- source dependecies -----
-src/arg_decode.c: src/arg_decode.h src/xclaim.h src/useful_buf_malloc.h
-src/base64.c: src/base64.h
-src/ctoken_adapt.c: src/ctoken_adapt.h src/xclaim.c
-src/jtoken_adapt.c: src/jtoken_adapt.h src/jtoken_encode.h src/xclaim.h
-src/jtoken_encode.c: src/jtoken_encode.h src/base64.h
-src/main.c: src/arg_decode.h src/jtoken_adapt.h src/ctoken_adapt.h src/xclaim.h
-src/useful_buf_malloc.c: src/useful_buf_malloc.h
-src/useful_file_io.c: src/useful_file_io.h
-src/claim.c: src/claim.h
+src/arg_decode.o: src/arg_decode.h src/xclaim.h src/useful_buf_malloc.h
+src/base64.o: src/base64.h
+src/ctoken_adapt.o: src/ctoken_adapt.h src/xclaim.c
+src/jtoken_adapt.o: src/jtoken_adapt.h src/jtoken_encode.h src/xclaim.h
+src/jtoken_encode.o: src/jtoken_encode.h src/base64.h
+src/main.o: src/arg_decode.h src/jtoken_adapt.h src/ctoken_adapt.h src/xclaim.h src/openssl_keys.h
+src/useful_buf_malloc.o: src/useful_buf_malloc.h
+src/useful_file_io.o: src/useful_file_io.h
+src/claim.o: src/claim.h
+src/openssl_keys.o: src/openssl_keys.h
+
 

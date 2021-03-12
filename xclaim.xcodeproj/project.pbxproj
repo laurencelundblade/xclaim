@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E72FC23425F94AF800D07153 /* openssl_keys.c in Sources */ = {isa = PBXBuildFile; fileRef = E72FC23225F94AF700D07153 /* openssl_keys.c */; };
 		E7FDBF7725E2EC54007138A8 /* useful_file_io.c in Sources */ = {isa = PBXBuildFile; fileRef = E7FDBF6725E2EC54007138A8 /* useful_file_io.c */; };
 		E7FDBF7825E2EC54007138A8 /* ctoken_adapt.c in Sources */ = {isa = PBXBuildFile; fileRef = E7FDBF6925E2EC54007138A8 /* ctoken_adapt.c */; };
 		E7FDBF7925E2EC54007138A8 /* xclaim.c in Sources */ = {isa = PBXBuildFile; fileRef = E7FDBF6B25E2EC54007138A8 /* xclaim.c */; };
@@ -35,6 +36,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E72FC23225F94AF700D07153 /* openssl_keys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = openssl_keys.c; path = src/openssl_keys.c; sourceTree = "<group>"; };
+		E72FC23325F94AF800D07153 /* openssl_keys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = openssl_keys.h; path = src/openssl_keys.h; sourceTree = "<group>"; };
 		E7FDBF5A25E2EA65007138A8 /* xclaim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xclaim; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7FDBF6625E2EC54007138A8 /* arg_decode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = arg_decode.h; path = src/arg_decode.h; sourceTree = "<group>"; };
 		E7FDBF6725E2EC54007138A8 /* useful_file_io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = useful_file_io.c; path = src/useful_file_io.c; sourceTree = "<group>"; };
@@ -99,6 +102,8 @@
 		E7FDBF6525E2EC35007138A8 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				E72FC23225F94AF700D07153 /* openssl_keys.c */,
+				E72FC23325F94AF800D07153 /* openssl_keys.h */,
 				E7FDBF7425E2EC54007138A8 /* arg_decode.c */,
 				E7FDBF6625E2EC54007138A8 /* arg_decode.h */,
 				E7FDBF7325E2EC54007138A8 /* base64.c */,
@@ -203,6 +208,7 @@
 				E7FDBF7C25E2EC54007138A8 /* main.c in Sources */,
 				E7FDBF7725E2EC54007138A8 /* useful_file_io.c in Sources */,
 				E7FDBF7A25E2EC54007138A8 /* useful_buf_malloc.c in Sources */,
+				E72FC23425F94AF800D07153 /* openssl_keys.c in Sources */,
 				E7FDBF7B25E2EC54007138A8 /* jtoken_encode.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

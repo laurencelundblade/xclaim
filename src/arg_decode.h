@@ -85,6 +85,8 @@ struct ctoken_arguments {
     int32_t     out_sign_algorithm;
     struct q_useful_buf_c out_sign_kid;
 
+    const char *in_verify_key_file;
+
     bool no_verify;
 };
 
