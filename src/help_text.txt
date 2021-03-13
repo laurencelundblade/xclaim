@@ -1,0 +1,61 @@
+OVERVIEW
+  xclaim converts one format of a claim-containing token to another.
+
+  WARNING: xclaim is not yet complete, so some options don't work, error messages are unclear and such
+
+  The input formats are:
+    * signed CWTs (COSE signed CBOR map of claims)
+    * UCCS (unsecured CBOR map of claims)
+    * The -claim option on the command line
+
+  The output formats are:
+    * signed CWTs
+    * UCCS
+    * Bare JSON (default, easy for humans to read)
+
+  (Hopefully more formats get added over time)
+
+
+EXAMPLES
+   Make a simple JSON format token with two claims
+     xclaim -claim 100:100 -claim ueid:xx
+
+   Make a signed CWT token with one claim
+     xclaim -claim nonce:xxx -out_form CBOR -out_prot sign -out_sign_key ec.pem -out tok.cbor
+
+   Verify a CWT token and output in JSON
+     xclaim -in tok.cbor -in_verify_key ec.pem
+
+   Turn a UCCS into a signed CWT token
+     xclaim -in uccs.cbor -out_form CBOR -out_)prot sign -out_sign_key ec.pem -out tok.cbor
+
+
+OPTIONS
+  -claim <ll:vv>               Describes a claim. <ll> is the label. <vv> is the value.
+
+  -in <file>                   The input file when -claim is not used.
+  -in_prot <prot>              The expected protection. One of: none, sign, auto
+  -in_form <form>              The input format. One of: cbor
+  -in_verify_key <file>        A PEM format file with a verification key
+
+  -out <file>                  The output file. The default is stdout
+  -out_form <form>             The output format. One of: cbor, json
+  -out_prot <prot>             The output protection. One of: none, sign
+  -out_sign_alg <alg>          Alg is one of the COSE signing algorithms
+  -out_sign_key <file>         Private key to sign with
+  -out_sign_kid <kid>          Key ID associated with -out_sign_key
+  -out_sign_certs <file>       Cert to include in the output token for use when verifying
+  -out_sign_short_circuit      Use short-circuit signature to sign with
+
+
+PLANNED OPTIONS
+  -in_prot <prot>              The expected protection. One of: none, sign, mac, sign_encrypt, mac_encrypt, auto
+  -in_form <form>              The input format. One of: cbor, json
+
+  -in_verify_cert <cert_file>  Certificates to chain up to
+  -in_decrypt_key <key_file>   Private key for decryption.
+  -in_no_verify                The input file will be decoded, but any signature or mac will not be verified. No need to supply key material
+  -out_encrypt_alg <alg>       Alg is one of the COSE signing algorithms
+  -out_encrypt_key <file>      Public key to encrypt with
+  -out_tag <tagging>           CBOR tagging. One of: none, full, cose
+  -out_prot <prot>             The output protection. One of: none, sign, mac, sign_encrypt, mac_encrypt

@@ -30,17 +30,6 @@ void print_arguments_help()
 {
     fputs(help_text, stderr);
 }
-#if 0
-
-    fprintf(stderr,
-
-
- */
-
-}
-
-
-#endif
 
 
 /* returns 4 binary bits corresponding to hex character or
