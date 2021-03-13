@@ -20,49 +20,12 @@
 
 
 /*
- -claim ll:vv
 
- -in <file>
- -out <file>
-
- -in_form CBOR, JSON
- -out_form CBOR, JSON, text, CBOR diag
-
- -in_prot none, sign, mac, sign_encrypt, mac_encrypt, auto
- -out_prot none, sign, mac, sign_encrypt, mac_encrypt
-
- -no_verify  The input file will be decoded, but any signature or mac will not be verified. No need to supply key material
-
- -out_sign_alg <alg>  Alg is one of the COSE signing algorithms
- -out_sign_key  <file>  private key to sign with
- -out_sign_kid  <kid>   Key ID associated with -out_sign_key
- -out_certs  <file>  cert for verifier to include in the output token
- -out_sign_short_circuit  Use short-circuit signature to sign with
- -out_encrypt_alg <alg> Alg is one of the COSE signing algorithms
- -out_encrypt_key public key to encrypt with
-
-
- -in_verify_key
- -in_verify_cert
- -in_decrypt_key
-
- -out_tag  none, full, cose
-
-There must be an input that is either a file or some claims.
- If there is a file, it will be verified and key material must be given to do so.
- To skip verification use the -noverify option.
-
-
- Example of signing
-  xclaim -out_sign_key foo.pem
-
- How to do key ID?
-  - set COSE key ID header
-  - add certificates in COSE headers
-  - assume linkage to UEID or such
  */
 
 struct ctoken_arguments {
+    bool help;
+
     const char *input_file;
     const char *output_file;
 
@@ -127,6 +90,9 @@ void xclaim_argument_decode_init(xclaim_decoder *ic,
                                 struct claim_argument_decoder *ctx,
                                 const char **claims_args);
 
+
+
+void print_arguments_help();
 
 
 #endif /* arg_parse_h */

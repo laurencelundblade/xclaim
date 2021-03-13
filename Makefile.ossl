@@ -79,7 +79,7 @@ CFLAGS=$(ALL_INC) $(C_OPTS) $(CRYPTO_CONFIG_OPTS)
 
 SRC_OBJ=src/arg_decode.o src/base64.o src/ctoken_adapt.o src/jtoken_adapt.o \
         src/jtoken_encode.o src/main.o src/useful_buf_malloc.o \
-        src/useful_file_io.o src/xclaim.o src/openssl_keys.o
+        src/useful_file_io.o src/xclaim.o src/openssl_keys.o src/help_text.o
 
 
 all:	xclaim
@@ -91,6 +91,16 @@ xclaim: $(SRC_OBJ)
 
 clean:
 	rm -f $(SRC_OBJ) 
+
+src/help_text.o: src/help_text.c
+	cc -c src/help_text.c -o src/help_text.o
+
+
+src/help_text.c:	src/help_text.txt
+	echo 'const char *help_text =' > src/help_text.c
+	cat src/help_text.txt | sed -e 's/^/    "/' -e 's/$$/\\n"/' >> src/help_text.c
+	echo "    ;" >> src/help_text.c
+
 
 
 # ---- source dependecies -----

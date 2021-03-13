@@ -22,6 +22,14 @@
 #include "useful_buf_malloc.h"
 #include "ctoken/ctoken_cwt_labels.h"
 
+#include "help_text.h"
+
+
+
+void print_arguments_help()
+{
+    fputs(help_text, stderr);
+}
 
 
 /* returns 4 binary bits corresponding to hex character or
@@ -77,6 +85,7 @@ static struct q_useful_buf_c convert_to_binary(const char *z)
 
 /* Command line option indexes used with getopt(). */
 enum arg_id_t {
+    HELP,
     INPUT_FILE,
     OUTPUT_FILE,
     CLAIM,
@@ -96,21 +105,22 @@ enum arg_id_t {
 
 /* Description of the command line options for getopt(), particularly getopt_long_only(). */
 static const struct option longopts[] = {
-    { "in",         required_argument,  NULL,  INPUT_FILE },
-    { "out",        required_argument,  NULL,  OUTPUT_FILE },
-    { "claim",      required_argument,  NULL,  CLAIM },
-    { "in_form",    required_argument,  NULL,  INPUT_FORMAT },
-    { "out_form",   required_argument,  NULL,  OUTPUT_FORMAT },
-    { "in_prot",    required_argument,  NULL,  INPUT_PROTECTION },
-    { "out_prot",   required_argument,  NULL,  OUTPUT_PROTECTION },
-    { "out_tag",    required_argument,  NULL,  OUTPUT_TAGGING },
-    { "no_verify",  no_argument,        NULL,  NO_VERIFY },
-    { "out_sign_alg", required_argument, NULL, OUT_SIGN_ALG },
-    { "out_sign_key", required_argument, NULL, OUT_SIGN_KEY },
-    { "out_sign_key", required_argument, NULL, OUT_SIGN_KID },
+    { "help",       no_argument,             NULL, HELP },
+    { "in",         required_argument,       NULL, INPUT_FILE },
+    { "out",        required_argument,       NULL, OUTPUT_FILE },
+    { "claim",      required_argument,       NULL, CLAIM },
+    { "in_form",    required_argument,       NULL, INPUT_FORMAT },
+    { "out_form",   required_argument,       NULL, OUTPUT_FORMAT },
+    { "in_prot",    required_argument,       NULL, INPUT_PROTECTION },
+    { "out_prot",   required_argument,       NULL, OUTPUT_PROTECTION },
+    { "out_tag",    required_argument,       NULL, OUTPUT_TAGGING },
+    { "no_verify",  no_argument,             NULL, NO_VERIFY },
+    { "out_sign_alg", required_argument,     NULL, OUT_SIGN_ALG },
+    { "out_sign_key", required_argument,     NULL, OUT_SIGN_KEY },
+    { "out_sign_key", required_argument,     NULL, OUT_SIGN_KID },
     { "out_sign_short_circuit", no_argument, NULL, OUT_SIGN_SHORT_CIRCUIT},
-    { "in_verify_key", required_argument, NULL, IN_VERIFY_KEY},
-    { NULL,         0,                  NULL,  0 }
+    { "in_verify_key", required_argument,    NULL, IN_VERIFY_KEY},
+    { NULL,         0,                       NULL, 0 }
 };
 
 
@@ -148,6 +158,10 @@ int parse_arguments(int argc, char **argv, struct ctoken_arguments *arguments)
     while((selected_opt = getopt_long_only(argc, argv, "", longopts, NULL)) != EOF) {
 
         switch(selected_opt) {
+            case HELP:
+                arguments->help = true;
+                break;
+
             case INPUT_FILE:
                 arguments->input_file = optarg;
                 break;

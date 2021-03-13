@@ -175,7 +175,7 @@ int encode_as_json(xclaim_decoder *in, FILE *output_file)
 
 
 
-int ctoken(const struct ctoken_arguments *arguments)
+int xclaim_main(const struct ctoken_arguments *arguments)
 {
     struct q_useful_buf_c         input_bytes;
     FILE                         *output_file;
@@ -298,7 +298,13 @@ int main(int argc, char * argv[])
         return return_value;
     }
 
-    return_value = ctoken(&arguments);
+    if(arguments.help) {
+        print_arguments_help();
+
+    } else {
+        /* This is where the all the real work happens */
+        return_value = xclaim_main(&arguments);
+    }
 
     free_arguments(&arguments);
 
