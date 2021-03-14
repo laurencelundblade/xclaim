@@ -154,8 +154,9 @@ Done:
 
 int encode_as_json(xclaim_decoder *in, FILE *output_file)
 {
-    xclaim_encoder output;
+    xclaim_encoder           output;
     struct jtoken_encode_ctx jo;
+    enum xclaim_error_t      xclaim_error;
 
     jo.out_file = output_file;
 
@@ -163,13 +164,17 @@ int encode_as_json(xclaim_decoder *in, FILE *output_file)
 
     jtoken_encode_start(&jo);
 
-    xclaim_processor(in, &output);
+    xclaim_error = xclaim_processor(in, &output);
+    if(xclaim_error != XCLAIM_SUCCESS) {
+        fprintf(stderr, "Error processing claims %d\n", xclaim_error);
+        goto Done;
+    }
 
     jtoken_encode_finish(&jo);
 
     // TODO: error handling
-
-    return 0;
+Done:
+    return xclaim_error;
 }
 
 
@@ -214,15 +219,20 @@ int xclaim_main(const struct ctoken_arguments *arguments)
         } else {
             file_descriptor = open(arguments->input_file, O_RDONLY);
             if(file_descriptor < 0) {
-                fprintf(stderr, "can't open input file \"%s\" (%s)\n",
-                        arguments->input_file, strerror(errno));
+                fprintf(stderr,
+                        "can't open input file \"%s\" (%s)\n",
+                        arguments->input_file,
+                        strerror(errno));
                 return_value = 1;
                 goto Done;
             }
         }
         input_bytes = read_file(file_descriptor);
         if(UsefulBuf_IsNULLC(input_bytes)) {
-            fprintf(stderr, "error reading input file \"%s\"\n", arguments->input_file);
+            fprintf(stderr,
+                    "error reading input file \"%s\" (%s)\n",
+                    arguments->input_file,
+                    strerror(errno));
             return_value = 1;
             goto Done;
         }

@@ -67,6 +67,9 @@ enum xclaim_error_t xclaim_processor(xclaim_decoder *decoder, xclaim_encoder *en
             xclaim_error = (decoder->enter_submod(decoder->ctx, submod_index, &submod_name));
         } while (xclaim_error == XCLAIM_SUCCESS || xclaim_error == XCLAIM_SUBMOD_IS_TOKEN);
         (encoder->end_submods_section)(encoder->ctx);
+        if(xclaim_error == XCLAIM_NO_MORE) {
+            xclaim_error = XCLAIM_SUCCESS;
+        }
         
     } else if(xclaim_error == XCLAIM_NO_MORE) {
         xclaim_error = XCLAIM_SUCCESS;
