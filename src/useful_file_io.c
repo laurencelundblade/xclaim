@@ -17,7 +17,8 @@
 
 
 
-
+// TODO: return an error
+// Deal with zero length file as input
 struct q_useful_buf_c read_file(int file_descriptor)
 {
     char    input_buf[2048];

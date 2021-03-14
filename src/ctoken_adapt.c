@@ -213,7 +213,7 @@ enter_submod(void *decode_ctx, uint32_t submod_index, struct q_useful_buf_c *sub
 
     error = ctoken_decode_enter_nth_submod(dctx, submod_index, submod_name);
 
-    if(error == CTOKEN_ERR_SUBMOD_INDEX_TOO_LARGE) {
+    if(error == CTOKEN_ERR_SUBMOD_INDEX_TOO_LARGE || error == CTOKEN_ERR_SUBMOD_SECTION || error == CTOKEN_ERR_NO_MORE_CLAIMS) {
         return XCLAIM_NO_MORE;
     } else if(error == CTOKEN_ERR_SUCCESS) {
         return XCLAIM_SUCCESS;
