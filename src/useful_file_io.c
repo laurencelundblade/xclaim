@@ -16,9 +16,6 @@
 #include <stdlib.h>
 
 
-
-// TODO: return an error
-// Deal with zero length file as input
 struct q_useful_buf_c read_file(int file_descriptor)
 {
     char    input_buf[2048];
@@ -33,6 +30,11 @@ struct q_useful_buf_c read_file(int file_descriptor)
         amount_read = read(file_descriptor, input_buf, sizeof(input_buf));
 
         if(amount_read == 0) {
+            if(file_size == 0 && file_content == NULL) {
+                /* Distinguish a zero-length file from a read error by
+                 * returning a pointer as per the defenition in UsefulBuf.h */
+                file_content = malloc(1);
+            }
             /* normal exit */
             break;
         }
@@ -62,6 +64,7 @@ struct q_useful_buf_c read_file(int file_descriptor)
 
     return (struct q_useful_buf_c){file_content, file_size};
 }
+
 
 
 

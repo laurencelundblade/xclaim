@@ -18,9 +18,10 @@
 
 
 /* Read the contents of a file into malloced buffer
-*
-*
-*/
+ * A zero-length file will still have a malloced
+ * pointer that needs to be freed. An error
+ * reading or mallocing will return a NULL_Q_USEFUL_BUF_C.
+ */
 struct q_useful_buf_c read_file(int file_descriptor);
 
 

@@ -241,6 +241,13 @@ int xclaim_main(const struct ctoken_arguments *arguments)
             return_value = 1;
             goto Done;
         }
+        if(UsefulBuf_IsEmptyC(input_bytes)){
+            fprintf(stderr,
+                    "input  \"%s\" is empty\n",
+                    arguments->input_file);
+            return_value = 1;
+            goto Done;
+        }
 
         // TODO: need to handle JSON input too. This assumes file is CBOR for now
         if(arguments->in_verify_key_file) {
