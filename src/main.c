@@ -1,5 +1,5 @@
 /*
- * main.c
+ * main.c for xclaim
  *
  * Copyright (c) 2021, Laurence Lundblade.
  *
@@ -33,9 +33,9 @@
 
 
 
-/* This drives the encoding of the input in CBOR using ctoken. */
-int encode_as_cbor(xclaim_decoder *xclaim_decoder,
-                   FILE           *output_file,
+/* This drives the encoding of the output in CBOR using ctoken. */
+int encode_as_cbor(xclaim_decoder                *xclaim_decoder,
+                   FILE                          *output_file,
                    const struct ctoken_arguments *arguments)
 {
     xclaim_encoder            xclaim_encoder;
@@ -54,7 +54,7 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder,
     // TODO: this should not be necessary
     memset(&ctoken_encoder, 0, sizeof(struct ctoken_encode_ctx));
 
-    cose_signing_alg = -7;
+    cose_signing_alg = T_COSE_ALGORITHM_ES256;
     t_cose_opt_flags = 0;
     ctoken_opt_flags = 0;
 
@@ -80,7 +80,7 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder,
             break;
 
         default:
-            return 99; // TODO: error code
+            return 1;
     }
 
 
@@ -89,7 +89,7 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder,
     if(arguments->out_sign_key_file != NULL) {
         int err = read_private_ec_key_from_file(arguments->out_sign_key_file, &out_sign_key);
         if(err) {
-            return 77;
+            return 1;
         }
     }
 
@@ -114,7 +114,8 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder,
     xclaim_ctoken_encode_init(&xclaim_encoder, &ctoken_encoder);
 
 
-    // Loop only executes twice, once to compute size then to actually created token
+    /* Loop only executes twice, once to compute size then to actually
+     * created token */
     out_buf = (struct q_useful_buf){NULL, SIZE_MAX};
 
     while(1) {
@@ -131,7 +132,7 @@ int encode_as_cbor(xclaim_decoder *xclaim_decoder,
         }
 
         if(out_buf.ptr != NULL) {
-            // Normal exit from loop
+            /* Normal exit from loop */
             break;
         }
 
@@ -146,12 +147,15 @@ Done:
         free(out_buf.ptr);
     }
 
-    return 0; // TODO: error code
+    return 0;
 }
 
 
 
-
+/* This drives the encoding of the output in JSONB using jtoken.
+ * Unlike ctoken, jtoken is a limited and primitive encoder. It
+ * doesn't support signing or decoding
+ */
 int encode_as_json(xclaim_decoder *in, FILE *output_file)
 {
     xclaim_encoder           output;
@@ -179,7 +183,7 @@ Done:
 
 
 
-
+/* Does the main work of xclaim aside from argument parsing. */
 int xclaim_main(const struct ctoken_arguments *arguments)
 {
     struct q_useful_buf_c         input_bytes;
@@ -201,14 +205,15 @@ int xclaim_main(const struct ctoken_arguments *arguments)
 
 
     /* Set up the xlaim_decoder object first. The type of this object
-       depends on the input type (e.g. CBOR or command line arguments
-       (eventually JWT too)). The decoder object will be called by
-     the outputter to iterate over all the claims. */
+     * depends on the input type (e.g. CBOR or command line arguments
+     *   (eventually JWT too)). The decoder object will be called by
+     * the outputter to iterate over all the claims. */
     if(arguments->input_file) {
 
         /* Input is a file, not claim arguments */
         if(arguments->claims) {
             fprintf(stderr, "Can't give -in option and -claim option at the same time (yet)\n");
+            fprintf(stderr, "\xclaim -help\" for xclaim options\n");
             return_value = 1;
             goto Done;
         }
@@ -237,7 +242,7 @@ int xclaim_main(const struct ctoken_arguments *arguments)
             goto Done;
         }
 
-        // TODO: need to handle JSON too. This assumes file is CBOR
+        // TODO: need to handle JSON input too. This assumes file is CBOR for now
         if(arguments->in_verify_key_file) {
             int x = read_pub_ec_key_from_file(arguments->in_verify_key_file, &verification_key);
             if(x) {
@@ -258,16 +263,19 @@ int xclaim_main(const struct ctoken_arguments *arguments)
 
         } else {
             fprintf(stderr, "No input given (neither -in or -claim given)\n");
+            fprintf(stderr, "\"xclaim -help\" for xclaim options\n");
             return_value = 1;
             goto Done;        }
     }
 
 
-    /* Set up output file to which whatever is done will be written. */
+    /* Set up output file to for CBOR, JSON... */
     if(arguments->output_file) {
         output_file = fopen(arguments->output_file, "w");
         if(output_file == NULL) {
-            fprintf(stderr, "error opening output file \"%s\"\n", arguments->output_file);
+            fprintf(stderr, "error opening output file \"%s\" (%s)\n",
+                    arguments->output_file,
+                    strerror(errno));
             goto Done;
         }
     } else {
@@ -277,10 +285,10 @@ int xclaim_main(const struct ctoken_arguments *arguments)
 
     /* Call the outputter to do the actual work */
     if(arguments->output_format == OUT_FORMAT_CBOR) {
-        encode_as_cbor(&decoder, output_file, arguments);
+        return_value = encode_as_cbor(&decoder, output_file, arguments);
 
     } else {
-        encode_as_json(&decoder, output_file);
+        return_value = encode_as_json(&decoder, output_file);
 
     }
 
@@ -291,7 +299,7 @@ Done:
 
     free_ec_key(verification_key);
 
-    return 0;
+    return return_value;
 }
 
 
@@ -321,15 +329,3 @@ int main(int argc, char * argv[])
     return return_value;
 }
 
-
-
-/*
- args to json X
- args to cbor
- cbor to json X
- cbor to cbor
-
-
-
-
- */
