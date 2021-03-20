@@ -342,7 +342,7 @@ static const struct integer_string_map_t label_map[] = {
     {14, "seclevel"},
 
     {CTOKEN_EAT_LABEL_SECURE_BOOT, "secboot"},
-    {15, "seclevel"},
+    {15, "secboot"},
 
     {CTOKEN_EAT_LABEL_DEBUG_STATE, "dbgstat"},
     {16, "dbgstat"},
