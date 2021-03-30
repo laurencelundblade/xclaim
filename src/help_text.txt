@@ -18,10 +18,10 @@ OVERVIEW
 
 EXAMPLES
    Make a simple JSON format token with two claims
-     xclaim -claim 100:100 -claim ueid:eHg=
+     xclaim -claim 100:100 -claim ueid:043aff
 
    Make a signed CWT token with one claim
-     xclaim -claim nonce:xxx -out_form CBOR -out_prot sign -out_sign_key ec.pem -out tok.cbor
+     xclaim -claim nonce:ff0039a1 -out_form CBOR -out_prot sign -out_sign_key ec.pem -out tok.cbor
 
    Verify a CWT token and output in JSON
      xclaim -in tok.cbor -in_verify_key ec.pem
@@ -32,6 +32,12 @@ EXAMPLES
 
 OPTIONS
   -claim <ll:vv>               Describes a claim. <ll> is the label. <vv> is the value.
+                               If <vv> is a binary string like the nonce or ueid,
+                               it is expressed as hex digits (e.g., ff03a800).
+                               <ll> may be any integer identifying a standardized
+                               or registered claim or a claim that is not standard
+                               or registered. It may also be the text name for
+                               a standard or registered claim. See list below.
 
   -in <file>                   The input file when -claim is not used.
   -in_prot <prot>              The expected protection. One of: none, sign, auto
@@ -59,3 +65,22 @@ PLANNED OPTIONS
   -out_encrypt_key <file>      Public key to encrypt with
   -out_tag <tagging>           CBOR tagging. One of: none, full, cose
   -out_prot <prot>             The output protection. One of: none, sign, mac, sign_encrypt, mac_encrypt
+
+
+SUPPORTED CLAIMS
+  nonce                       The nonce. A binary byte string.
+  ueid                        Universal Entity ID. A binary byte string.
+  iss                         The issuer as defined by CWT and JWT. A text string.
+  sub                         The subject as defined by CWT and JWT. A test string.
+  aud                         The audience as defined by CWT and JWT. A text string.
+  exp                         The expiration date as defined by CWT and JWT. An
+                              integer with the UNIX epoch date (TODO: support other date formats)
+  nbf                         Not before as defined by CWT and JWT. Same format as exp.
+  iat                         Issued at as defined by CWT and JWT. The time the token
+                              as issued. Same format as exp.
+  cti                         Unique token identifier as defined by CWT. A binary byte string.
+                              (TODO: support jti)
+  seclevel                    The EAT security level
+  secboot                     Whether secure boot is on or off ad defined by EAT.
+  dbgstat                     The debug status of entity as defined by EAT.
+  location                    The GPS location as defined by EAT.
