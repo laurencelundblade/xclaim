@@ -89,6 +89,25 @@ void jtoken_encode_byte_string(struct jtoken_encode_ctx *me,
     free(b64);
 }
 
+void jtoken_encode_byte_string2(struct jtoken_encode_ctx *me,
+                               struct q_useful_buf_c     claim_name,
+                               struct q_useful_buf_c     claim_value)
+{
+    size_t output_size;
+
+    indent(me);
+    fprintf(me->out_file, "\"");
+    fwrite(claim_name.ptr, 1, claim_name.len, me->out_file);
+    fprintf(me->out_file, "\": \"");
+
+    char *b64 = base64_encode(claim_value.ptr, claim_value.len, &output_size);
+
+    fwrite(b64, 1, output_size, me->out_file);
+    fprintf(me->out_file, "\"\n");
+
+    free(b64);
+}
+
 
 void jtoken_encode_simple(struct jtoken_encode_ctx *me,
                           const char               *claim_name,
@@ -255,3 +274,10 @@ void jtoken_encode_close_submod_section(struct jtoken_encode_ctx *me)
 }
 
 
+void jtoken_encode_output_nested(struct jtoken_encode_ctx   *me,
+                                 const struct q_useful_buf_c submod_name,
+                                 const struct q_useful_buf_c nested_token)
+{
+    // TODO: JSON submod vs CBOR submod
+    jtoken_encode_byte_string2(me, submod_name, nested_token);
+}

@@ -201,9 +201,9 @@ int xclaim_main(const struct ctoken_arguments *arguments)
 
 
     /* Set up the xlaim_decoder object first. The type of this object
-       depends on the input type (e.g. CBOR or command line arguments
-       (eventually JWT too)). The decoder object will be called by
-     the outputter to iterate over all the claims. */
+     * depends on the input type (e.g. CBOR or command line arguments
+     * (eventually JWT too)). The decoder object will be called by
+     * the outputter to iterate over all the claims. */
     if(arguments->input_file) {
 
         /* Input is a file, not claim arguments */

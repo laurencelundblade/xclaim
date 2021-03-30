@@ -347,6 +347,9 @@ void jtoken_encode_open_submod(struct jtoken_encode_ctx   *context,
 void jtoken_encode_close_submod_section(struct jtoken_encode_ctx  *context);
 
 
+void jtoken_encode_output_nested(struct jtoken_encode_ctx *me,
+                                 const struct q_useful_buf_c submod_name,
+                                 const struct q_useful_buf_c nested_token);
 
 
 

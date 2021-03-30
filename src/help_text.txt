@@ -18,7 +18,7 @@ OVERVIEW
 
 EXAMPLES
    Make a simple JSON format token with two claims
-     xclaim -claim 100:100 -claim ueid:xx
+     xclaim -claim 100:100 -claim ueid:eHg=
 
    Make a signed CWT token with one claim
      xclaim -claim nonce:xxx -out_form CBOR -out_prot sign -out_sign_key ec.pem -out tok.cbor
@@ -27,7 +27,7 @@ EXAMPLES
      xclaim -in tok.cbor -in_verify_key ec.pem
 
    Turn a UCCS into a signed CWT token
-     xclaim -in uccs.cbor -out_form CBOR -out_)prot sign -out_sign_key ec.pem -out tok.cbor
+     xclaim -in uccs.cbor -out_form CBOR -out_prot sign -out_sign_key ec.pem -out tok.cbor
 
 
 OPTIONS
