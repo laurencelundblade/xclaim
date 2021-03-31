@@ -52,7 +52,7 @@ enum xclaim_error_t xclaim_processor(xclaim_decoder *decoder, xclaim_encoder *en
                 (decoder->get_nested)(decoder->ctx, submod_index, &type,  &submod_name, &token);
                 (encoder->output_nested)(encoder->ctx, submod_name, token);
             } else {
-                /* Is it is a submodule with claims and maybe further
+                /* It is a submodule with claims and maybe further
                  * submodules that are processed by recursion. */
                 (encoder->open_submod)(encoder->ctx, submod_name); // TODO: fix this
                 xclaim_error = xclaim_processor(decoder, encoder);

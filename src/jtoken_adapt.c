@@ -155,6 +155,15 @@ jtoken_encode_close_submod_section_x(void *ctx)
 }
 
 
+enum xclaim_error_t jtoken_encode_output_nested_x(void                       *ctx,
+                                                  const struct q_useful_buf_c submod_name,
+                                                  struct q_useful_buf_c       nested_token)
+{
+    struct jtoken_encode_ctx *me = (struct jtoken_encode_ctx *)ctx;
+    jtoken_encode_output_nested(me, submod_name, nested_token);
+    return XCLAIM_SUCCESS;
+}
+
 int xclaim_jtoken_encode_init(xclaim_encoder *out, struct jtoken_encode_ctx *ctx)
 {
     out->ctx = ctx;
@@ -164,6 +173,7 @@ int xclaim_jtoken_encode_init(xclaim_encoder *out, struct jtoken_encode_ctx *ctx
     out->end_submods_section   = jtoken_encode_end_submod_section_x;
     out->open_submod           = jtoken_encode_open_submod_x;
     out->close_submod          = jtoken_encode_close_submod_section_x;
+    out->output_nested         = jtoken_encode_output_nested_x;
 
     return 0;
 }
