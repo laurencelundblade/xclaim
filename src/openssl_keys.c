@@ -53,7 +53,6 @@ int read_private_ec_key_from_file(const char *file_name, struct t_cose_key *k)
     k->crypto_lib = T_COSE_CRYPTO_LIB_OPENSSL;
     k->k.key_ptr = ec_private_key;
 
-    // TODO: figure out about freeing the key.
     return 0;
 }
 
