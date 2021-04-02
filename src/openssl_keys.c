@@ -36,7 +36,6 @@ int read_private_ec_key_from_file(const char *file_name, struct t_cose_key *k)
                                                        NULL  // void *u;
                                                        );
 
-    // TODO: error handling for wrong keys
     fclose(key_file);
 
     if(openssl_generic_private_key == NULL) {

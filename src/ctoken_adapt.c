@@ -111,7 +111,6 @@ encode_xclaim(void *ctx, const struct xclaim *claim)
             break;
 
         case CTOKEN_EAT_LABEL_SECURITY_LEVEL:
-            // TODO: check enum
             ctoken_encode_security_level(e_ctx, (enum ctoken_security_level_t)claim->qcbor_item.val.int64);
             break;
 
