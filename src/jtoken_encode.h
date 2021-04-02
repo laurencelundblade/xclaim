@@ -74,7 +74,7 @@ enum jtoken_debug_level_t {
 
 
 struct jtoken_encode_ctx {
-    FILE *out_file; // TODO: write to memory instead like ctoken.
+    FILE *out_file;
     int   indent_level;
 };
 

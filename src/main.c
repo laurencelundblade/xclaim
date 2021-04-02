@@ -68,7 +68,7 @@ int encode_as_cbor(xclaim_decoder                *xclaim_decoder,
             protection_type = CTOKEN_PROTECTION_COSE_SIGN1;
             cose_signing_alg = arguments->out_sign_algorithm;
             if(cose_signing_alg == 0) {
-                cose_signing_alg = -7; // TODO: constant for this
+                cose_signing_alg = T_COSE_ALGORITHM_ES256;
             }
             if(arguments->out_sign_short_circuit) {
                 // TODO: warn if key and such are set

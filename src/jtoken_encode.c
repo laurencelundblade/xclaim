@@ -225,9 +225,8 @@ int jtoken_encode_location(struct jtoken_encode_ctx *me, const struct ctoken_loc
 {
     indent(me);
     fprintf(me->out_file, "\"location\" : {\n");
-    // TODO: spelling of lattitude in ctoken lib
     indent(me);
-    fprintf(me->out_file, "   \"lattitude\": %f,\n", location->eat_loc_latitude);
+    fprintf(me->out_file, "   \"latitude\": %f,\n", location->eat_loc_latitude);
     indent(me);
     fprintf(me->out_file, "   \"longitude\": %f\n", location->eat_loc_longitude);
     indent(me);
