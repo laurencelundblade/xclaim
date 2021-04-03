@@ -72,6 +72,7 @@ ifneq ($(wildcard $(CTOKEN_DIR)), )
     # /usr/local or some system location. 
     CTOKEN_INC= -I $(CTOKEN_DIR)/inc
     CTOKEN_LIB=$(CTOKEN_DIR)/libctoken.a
+    CTOKEN_DEPENDENCY=$(CTOKEN_LIB)
 else
     # This is for reference to ctoken that has been installed in
     # /usr/local/ or in some system location. This will typically
