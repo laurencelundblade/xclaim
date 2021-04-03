@@ -1,7 +1,8 @@
 OVERVIEW
   xclaim converts one format of a claim-containing token to another.
 
-  WARNING: xclaim is not yet complete, so some options don't work, error messages are unclear and such
+  WARNING: xclaim is not yet complete, so some options don't work, error messages are unclear
+  there are BUGS and such
 
   The input formats are:
     * signed CWTs (COSE signed CBOR map of claims)
@@ -67,7 +68,7 @@ PLANNED OPTIONS
   -out_prot <prot>             The output protection. One of: none, sign, mac, sign_encrypt, mac_encrypt
 
 
-SUPPORTED CLAIMS
+SUPPORTED CLAIMS (lots more needed. You can help! https://github.com/laurencelundblade/xclaim)
   nonce                       The nonce. A binary byte string.
   ueid                        Universal Entity ID. A binary byte string.
   iss                         The issuer as defined by CWT and JWT. A text string.
