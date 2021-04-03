@@ -1,3 +1,9 @@
 [submodule "QCBOR"]
 	path = QCBOR
 	url = https://github.com/laurencelundblade/QCBOR
+[submodule "t_cose"]
+	path = t_cose
+	url = https://github.com/laurencelundblade/t_cose
+[submodule "ctoken"]
+	path = ctoken
+	url = https://github.com/laurencelundblade/ctoken
