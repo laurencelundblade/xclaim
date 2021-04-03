@@ -328,7 +328,6 @@ static const struct integer_string_map_t label_map[] = {
     {CTOKEN_CWT_LABEL_IAT, "iat"},
     {CTOKEN_CWT_LABEL_CTI, "cti"},
 
-    // TODO: sort out the official definition vs the temporary
     {CTOKEN_EAT_LABEL_NONCE, "nonce"},
     {10, "nonce"},
 
@@ -630,12 +629,6 @@ static int parse_location_arg(const char *s, struct ctoken_location_t *location)
 }
 
 
-
-
-
-/* Free a pointer if not NULL even if it is const */
-/* TODO: use this or get rid of it. */
-#define FREEIF(x) if(x != NULL){free((void *)x);}
 
 
 

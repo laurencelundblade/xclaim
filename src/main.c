@@ -68,7 +68,7 @@ int encode_as_cbor(xclaim_decoder                *xclaim_decoder,
             protection_type = CTOKEN_PROTECTION_COSE_SIGN1;
             cose_signing_alg = arguments->out_sign_algorithm;
             if(cose_signing_alg == 0) {
-                cose_signing_alg = -7; // TODO: constant for this
+                cose_signing_alg = T_COSE_ALGORITHM_ES256;
             }
             if(arguments->out_sign_short_circuit) {
                 // TODO: warn if key and such are set
@@ -206,6 +206,7 @@ int xclaim_main(const struct ctoken_arguments *arguments)
 
     /* Set up the xlaim_decoder object first. The type of this object
      * depends on the input type (e.g. CBOR or command line arguments
+     * (eventually JWT too)). The decoder object will be called by
      *   (eventually JWT too)). The decoder object will be called by
      * the outputter to iterate over all the claims. */
     if(arguments->input_file) {

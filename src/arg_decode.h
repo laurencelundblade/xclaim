@@ -92,7 +92,7 @@ void xclaim_argument_decode_init(xclaim_decoder *ic,
 
 
 
-void print_arguments_help();
+void print_arguments_help(void);
 
 
 #endif /* arg_parse_h */
