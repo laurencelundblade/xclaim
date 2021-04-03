@@ -29,7 +29,7 @@ QCBOR_LIB=$(QCBOR_DIR)/libqcbor.a
 
 # ---- t_cose location ----
 # Adjust this to the location of t_cose in your build environment
-T_COSE_DIR=t_coser
+T_COSE_DIR=t_cose
 T_COSE_INC= -I $(T_COSE_DIR)/inc
 T_COSE_LIB=$(T_COSE_DIR)/libt_cose.a
 
