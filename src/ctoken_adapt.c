@@ -25,33 +25,33 @@ int xclaim_encode_generic(struct ctoken_encode_ctx *ectx, const QCBORItem *claim
 
     switch(claim_item->uDataType) {
         case QCBOR_TYPE_INT64:
-            ctoken_encode_add_integer(ectx, claim_item->label.int64, claim_item->val.int64);
+            ctoken_encode_int(ectx, claim_item->label.int64, claim_item->val.int64);
             break;
 
         case QCBOR_TYPE_UINT64:
-            ctoken_encode_add_unsigned(ectx, claim_item->label.int64, claim_item->val.uint64);
+            ctoken_encode_unsigned(ectx, claim_item->label.int64, claim_item->val.uint64);
             break;
 
         case QCBOR_TYPE_DOUBLE:
-            ctoken_encode_add_double(ectx, claim_item->label.int64, claim_item->val.dfnum);
+            ctoken_encode_double(ectx, claim_item->label.int64, claim_item->val.dfnum);
             break;
 
         case QCBOR_TYPE_TEXT_STRING:
-            ctoken_encode_add_tstr(ectx, claim_item->label.int64, claim_item->val.string);
+            ctoken_encode_tstr(ectx, claim_item->label.int64, claim_item->val.string);
             break;
 
         case QCBOR_TYPE_BYTE_STRING:
-            ctoken_encode_add_bstr(ectx, claim_item->label.int64, claim_item->val.string);
+            ctoken_encode_bstr(ectx, claim_item->label.int64, claim_item->val.string);
             break;
 
         case QCBOR_TYPE_TRUE:
         case QCBOR_TYPE_FALSE:
             bool_value = claim_item->uDataType == QCBOR_TYPE_TRUE;
-            ctoken_encode_add_bool(ectx, claim_item->label.int64, bool_value);
+            ctoken_encode_bool(ectx, claim_item->label.int64, bool_value);
             break;
 
         case QCBOR_TYPE_NULL:
-            ctoken_encode_add_null(ectx, claim_item->label.int64);
+            ctoken_encode_null(ectx, claim_item->label.int64);
             break;
 
         default:
@@ -180,7 +180,8 @@ decode_next_xclaim(void *decode_ctx, struct xclaim *xclaim)
     enum xclaim_error_t       return_value;
     struct ctoken_decode_ctx *dctx = (struct ctoken_decode_ctx *)decode_ctx;
 
-    err = ctoken_decode_next_claim(dctx, &(xclaim->qcbor_item));
+    ctoken_decode_next_claim(dctx, &(xclaim->qcbor_item));
+    err = ctoken_decode_get_and_reset_error(dctx);
     if(err == CTOKEN_ERR_NO_MORE_CLAIMS) {
         /* End of claims or error getting them. */
         return_value =  XCLAIM_NO_MORE;
@@ -210,7 +211,8 @@ enter_submod(void *decode_ctx, uint32_t submod_index, struct q_useful_buf_c *sub
 
     enum ctoken_err_t error;
 
-    error = ctoken_decode_enter_nth_submod(dctx, submod_index, submod_name);
+    ctoken_decode_enter_nth_submod(dctx, submod_index, submod_name);
+    error = ctoken_decode_get_and_reset_error(dctx);
 
     if(error == CTOKEN_ERR_SUBMOD_NOT_FOUND) {
         return XCLAIM_NO_MORE;
@@ -231,7 +233,8 @@ exit_submod(void *decode_ctx)
 
     enum ctoken_err_t error;
 
-    error = ctoken_decode_exit_submod(dctx);
+    ctoken_decode_exit_submod(dctx);
+    error = ctoken_decode_get_and_reset_error(dctx);
 
     if(error == CTOKEN_ERR_SUCCESS) {
         return XCLAIM_SUCCESS;
@@ -252,7 +255,8 @@ get_nth_nested_token(void                   *decode_ctx,
 
     enum ctoken_err_t error;
 
-    error = ctoken_decode_get_nth_nested_token(dctx, submod_index, type, submod_name, token);
+    ctoken_decode_get_nth_nested_token(dctx, submod_index, type, submod_name, token);
+    error = ctoken_decode_get_and_reset_error(dctx);
 
     if(error == CTOKEN_ERR_SUCCESS) {
         return XCLAIM_SUCCESS;
@@ -290,7 +294,8 @@ int xclaim_ctoken_decode_init(xclaim_decoder           *xclaim_decoder,
         ctoken_decode_set_verification_key(ctx, verification_key);
     }
 
-    error = ctoken_decode_validate_token(ctx, input_bytes);
+    ctoken_decode_validate_token(ctx, input_bytes);
+    error = ctoken_decode_get_and_reset_error(ctx);
     if(error) {
         fprintf(stderr, "token validation failed. Ctoken error %d\n", error);
         return -9;
