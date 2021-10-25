@@ -1,5 +1,6 @@
-# xclaim
-Xclaim is a command line tool to encode and decode CWT, EAT, UCCS and at some point JWT. 
+[Xclaim](https://github.com/laurencelundblade/xclaim/blob/master/xclaim-logo.png?raw=true)
+ 
+*Xclaim* is a command line tool to encode and decode CWT, EAT, UCCS and at some point JWT. 
 It is designed as a cross-bar switch to be able to transform any one format token 
 into another. Here's a list of formats:
 
